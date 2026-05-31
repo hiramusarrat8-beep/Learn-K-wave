@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level 5 — Clinical Pipeline | k-Wave Learning</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Sora:wght@300;400;600;700&display=swap');
+:root{
+  --bg:#0a0e17;--surface:#111827;--surface2:#1a2235;--surface3:#1f2d45;
+  --border:#1e2d45;--border2:#263450;
+  --blue:#4da3ff;--blue-dim:rgba(77,163,255,0.12);
+  --green:#3ecf8e;--green-dim:rgba(62,207,142,0.1);
+  --amber:#f5a623;--amber-dim:rgba(245,166,35,0.1);
+  --red:#ff6b6b;--red-dim:rgba(255,107,107,0.1);
+  --purple:#a78bfa;--purple-dim:rgba(167,139,250,0.1);
+  --teal:#38d9d9;--coral:#ff8c69;--coral-dim:rgba(255,140,105,0.1);
+  --gold:#ffd166;--gold-dim:rgba(255,209,102,0.1);
+  --text:#c8d6ef;--text-dim:#6b7fa3;--text-bright:#eaf2ff;
+  --mono:"JetBrains Mono",monospace;--sans:"Sora",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.7;}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(10,14,23,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:56px;}
+.logo{font-weight:700;font-size:16px;color:var(--blue);}
+.breadcrumb{color:var(--text-dim);font-size:13px;margin-left:12px;}
+.breadcrumb span{color:var(--text);}
+.level-badge{background:var(--gold-dim);border:1px solid rgba(255,209,102,0.35);color:var(--gold);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;}
+.progress-track{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 32px;display:flex;gap:6px;align-items:center;overflow-x:auto;}
+.progress-step{display:flex;align-items:center;gap:6px;white-space:nowrap;font-size:12px;color:var(--text-dim);}
+.progress-step.active{color:var(--gold);}
+.progress-step.done{color:var(--green);}
+.step-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:1.5px solid var(--border2);background:var(--surface);color:var(--text-dim);flex-shrink:0;}
+.progress-step.active .step-dot{background:var(--gold);border-color:var(--gold);color:#111;}
+.progress-step.done .step-dot{background:var(--green);border-color:var(--green);color:#fff;}
+.step-connector{width:32px;height:1px;background:var(--border2);flex-shrink:0;}
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 110px);}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:24px 0;position:sticky;top:110px;height:calc(100vh - 110px);overflow-y:auto;}
+.sidebar-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-dim);padding:4px 20px 8px;}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:8px 20px;cursor:pointer;font-size:13px;color:var(--text-dim);transition:all 0.15s;border-left:2px solid transparent;}
+.sidebar-item:hover{background:var(--surface2);color:var(--text);}
+.sidebar-item.active{background:var(--gold-dim);border-left-color:var(--gold);color:var(--gold);}
+.main{padding:40px 48px;max-width:960px;}
+.hero{margin-bottom:40px;padding-bottom:32px;border-bottom:1px solid var(--border);}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:var(--gold-dim);border:1px solid rgba(255,209,102,0.3);color:var(--gold);font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:16px;letter-spacing:0.5px;text-transform:uppercase;}
+.hero h1{font-size:30px;font-weight:700;color:var(--text-bright);letter-spacing:-0.5px;line-height:1.25;margin-bottom:12px;}
+.hero h1 em{color:var(--gold);font-style:normal;}
+.hero-desc{color:var(--text-dim);font-size:15px;max-width:660px;}
+.hero-meta{display:flex;gap:20px;margin-top:20px;flex-wrap:wrap;}
+.meta-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);}
+.meta-dot{width:6px;height:6px;border-radius:50%;}
+.concept-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:36px;}
+.cc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 14px;position:relative;overflow:hidden;transition:all 0.2s;}
+.cc::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;}
+.cc.cy::before{background:var(--gold);}
+.cc.cb::before{background:var(--blue);}
+.cc.cg::before{background:var(--green);}
+.cc.cp::before{background:var(--purple);}
+.cc:hover{border-color:var(--border2);transform:translateY(-1px);}
+.cc-icon{font-size:20px;margin-bottom:8px;}
+.cc-title{font-size:12px;font-weight:700;color:var(--text-bright);margin-bottom:3px;}
+.cc-sub{font-size:11px;color:var(--text-dim);}
+.cc-tag{margin-top:8px;display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;font-family:var(--mono);}
+.cy .cc-tag{background:var(--gold-dim);color:var(--gold);}
+.cb .cc-tag{background:var(--blue-dim);color:var(--blue);}
+.cg .cc-tag{background:var(--green-dim);color:var(--green);}
+.cp .cc-tag{background:var(--purple-dim);color:var(--purple);}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.sh-num{width:32px;height:32px;border-radius:8px;background:var(--gold-dim);border:1px solid rgba(255,209,102,0.3);color:var(--gold);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sh-title{font-size:18px;font-weight:700;color:var(--text-bright);}
+.sh-sub{font-size:13px;color:var(--text-dim);margin-top:2px;}
+.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0 28px;}
+.tool-card{background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:18px;transition:all 0.2s;}
+.tool-card:hover{border-color:var(--border);transform:translateY(-1px);}
+.tool-logo{font-size:26px;margin-bottom:10px;}
+.tool-name{font-size:14px;font-weight:700;color:var(--text-bright);margin-bottom:4px;}
+.tool-sub{font-size:12px;color:var(--text-dim);margin-bottom:10px;line-height:1.5;}
+.tool-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.tool-tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;font-family:var(--mono);}
+.tt-blue{background:var(--blue-dim);color:var(--blue);}
+.tt-green{background:var(--green-dim);color:var(--green);}
+.tt-gold{background:var(--gold-dim);color:var(--gold);}
+.tt-purple{background:var(--purple-dim);color:var(--purple);}
+.tt-amber{background:var(--amber-dim);color:var(--amber);}
+/* STEPPER */
+.stepper{margin-bottom:36px;}
+.step-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:24px;overflow-x:auto;}
+.step-tab{padding:10px 18px;font-size:13px;font-weight:600;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.15s;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--sans);}
+.step-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.step-tab:hover{color:var(--text);}
+.step-panel{display:none;}
+.step-panel.active{display:block;}
+/* CODE */
+.code-section{margin-bottom:36px;}
+.code-wrapper{background:#0d1424;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.code-topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:var(--surface2);border-bottom:1px solid var(--border);}
+.code-filename{font-family:var(--mono);font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:8px;}
+.code-filename::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold);display:inline-block;}
+.code-actions{display:flex;gap:8px;}
+.code-btn{padding:4px 12px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--text-dim);font-size:11px;cursor:pointer;font-family:var(--sans);transition:all 0.15s;}
+.code-btn:hover{background:var(--surface3);color:var(--text);}
+.code-body{display:flex;}
+.line-nums{padding:20px 12px;font-family:var(--mono);font-size:12.5px;line-height:1.9;color:var(--text-dim);text-align:right;border-right:1px solid var(--border);user-select:none;min-width:44px;opacity:0.4;}
+.code-lines{flex:1;padding:20px 0;overflow-x:auto;}
+.code-line{display:flex;align-items:stretch;min-height:24px;font-family:var(--mono);font-size:12.5px;line-height:1.9;}
+.code-line:hover{background:rgba(255,255,255,0.03);}
+.code-line.hl{background:rgba(255,209,102,0.06);}
+.code-line-content{padding:0 20px;white-space:pre;flex:1;}
+.ann-trigger{width:24px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity 0.15s;}
+.code-line:hover .ann-trigger{opacity:1;}
+.ann-trigger.has{opacity:0.6!important;}
+.ann-trigger.has:hover{opacity:1!important;}
+.ann-dot{width:6px;height:6px;border-radius:50%;}
+.ann-blue{background:var(--blue);}.ann-gold{background:var(--gold);}.ann-green{background:var(--green);}.ann-amber{background:var(--amber);}.ann-purple{background:var(--purple);}
+.annotation-panel{background:var(--surface2);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:14px 18px;margin:2px 0 2px 44px;font-size:13px;display:none;}
+.annotation-panel.show{display:block;}
+.annotation-panel.blue{border-left-color:var(--blue);}
+.annotation-panel.green{border-left-color:var(--green);}
+.annotation-panel.amber{border-left-color:var(--amber);}
+.annotation-panel.purple{border-left-color:var(--purple);}
+.ann-title{font-weight:700;color:var(--text-bright);margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;}
+.ann-body{color:var(--text);line-height:1.6;}
+.ann-body code{background:var(--surface3);padding:1px 6px;border-radius:3px;font-family:var(--mono);font-size:11px;color:var(--teal);}
+.ann-formula{margin-top:8px;background:var(--surface3);border-radius:6px;padding:8px 12px;font-family:var(--mono);font-size:12px;color:var(--amber);}
+/* CALLOUTS */
+.callout{border-radius:8px;padding:14px 18px;margin-bottom:20px;font-size:13.5px;display:flex;gap:12px;align-items:flex-start;}
+.callout.info{background:var(--blue-dim);border:1px solid rgba(77,163,255,0.2);}
+.callout.warn{background:var(--amber-dim);border:1px solid rgba(245,166,35,0.2);}
+.callout.tip{background:var(--green-dim);border:1px solid rgba(62,207,142,0.2);}
+.callout.gold{background:var(--gold-dim);border:1px solid rgba(255,209,102,0.25);}
+.callout-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.callout-text{line-height:1.6;}
+.callout-text strong{display:block;margin-bottom:3px;font-size:12px;text-transform:uppercase;letter-spacing:0.4px;}
+.callout.info .callout-text strong{color:var(--blue);}
+.callout.warn .callout-text strong{color:var(--amber);}
+.callout.tip .callout-text strong{color:var(--green);}
+.callout.gold .callout-text strong{color:var(--gold);}
+/* TABLES */
+.compare-table{width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:24px;font-size:13px;}
+.compare-table th{background:var(--surface2);padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;border-bottom:1px solid var(--border);}
+.compare-table td{padding:10px 16px;border-bottom:1px solid var(--border);vertical-align:top;}
+.compare-table tr:last-child td{border-bottom:none;}
+.compare-table td:first-child{font-family:var(--mono);font-size:12px;color:var(--teal);width:200px;}
+/* QUIZ */
+.quiz-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:24px;}
+.quiz-header{font-size:13px;color:var(--text-dim);margin-bottom:12px;}
+.quiz-q{font-size:15px;font-weight:600;color:var(--text-bright);margin-bottom:14px;}
+.quiz-options{display:flex;flex-direction:column;gap:8px;}
+.quiz-opt{padding:10px 16px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);cursor:pointer;font-size:13px;color:var(--text);transition:all 0.15s;text-align:left;font-family:var(--sans);}
+.quiz-opt:hover{border-color:var(--gold);color:var(--text-bright);}
+.quiz-opt.correct{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+.quiz-opt.wrong{background:var(--red-dim);border-color:var(--red);color:var(--red);}
+.quiz-explain{margin-top:14px;padding:12px 16px;background:var(--surface2);border-radius:8px;font-size:13px;line-height:1.6;display:none;}
+.quiz-explain.show{display:block;}
+.quiz-explain code{font-family:var(--mono);font-size:12px;background:var(--surface3);padding:1px 5px;border-radius:3px;color:var(--teal);}
+/* COMPLETION */
+.completion{background:linear-gradient(135deg,rgba(255,209,102,0.08),rgba(77,163,255,0.06));border:1px solid rgba(255,209,102,0.25);border-radius:16px;padding:40px;text-align:center;margin-bottom:40px;}
+.completion h2{font-size:26px;font-weight:700;color:var(--text-bright);margin-bottom:12px;}
+.completion p{color:var(--text-dim);max-width:520px;margin:0 auto 28px;}
+.cert-badges{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:28px;}
+.cert-badge{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:8px 14px;font-size:12px;color:var(--text-dim);}
+.cert-badge.lit{border-color:var(--green);color:var(--green);background:var(--green-dim);}
+.next-steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.next-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:left;}
+.next-card-title{font-size:12px;font-weight:700;color:var(--text-bright);margin-bottom:6px;}
+.next-card-sub{font-size:11px;color:var(--text-dim);line-height:1.5;}
+.nav-footer{display:flex;justify-content:space-between;align-items:center;padding:32px 0;border-top:1px solid var(--border);margin-top:16px;}
+.nav-btn{display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:8px;border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;font-family:var(--sans);font-size:13px;text-decoration:none;transition:all 0.15s;}
+.nav-btn:hover{border-color:var(--gold);color:var(--gold);}
+.nav-btn.primary{background:var(--gold);border-color:var(--gold);color:#111;font-weight:700;}
+.nav-btn.primary:hover{background:#e6ba00;}
+.kw{color:#ff79c6;}.fn{color:#bd93f9;}.num{color:#f1fa8c;}.str{color:#f1fa8c;}.cmt{color:#6272a4;font-style:italic;}.var{color:#8be9fd;}.op{color:#ff79c6;}
+section[id]{scroll-margin-top:130px;}
+
+/* Blend this standalone page with the main Learn k-Wave site. */
+:root{
+  --bg:#0f1716;--surface:#111817;--surface2:#17211f;--surface3:#1c2c2a;
+  --border:rgba(143,167,156,0.18);--border2:rgba(143,167,156,0.28);
+  --blue:#50b8d8;--blue-dim:rgba(80,184,216,0.12);
+  --green:#50e1ba;--green-dim:rgba(80,225,186,0.11);
+  --amber:#d79b33;--amber-dim:rgba(215,155,51,0.12);
+  --red:#d75f4f;--red-dim:rgba(215,95,79,0.12);
+  --purple:#9b83bd;--purple-dim:rgba(155,131,189,0.12);
+  --teal:#0f7c80;--coral:#d75f4f;--coral-dim:rgba(215,95,79,0.12);
+  --text:#c5d7cf;--text-dim:#8fa79c;--text-bright:#eef7f4;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  --sans:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+body{background:radial-gradient(circle at 90% 10%,rgba(80,225,186,0.08),transparent 28%),var(--bg);}
+.topbar{background:rgba(15,23,22,0.95);}
+.logo{color:var(--green);font-weight:800;text-decoration:none;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div style="display:flex;align-items:center;">
+    <a class="logo" href="index.html">Learn k-Wave</a>
+    <div class="breadcrumb">/ <span>Level 5</span> / Clinical Pipeline</div>
+  </div>
+  <div class="level-badge">Level 5 of 5 — Final</div>
+</div>
+
+<div class="progress-track">
+  <div class="progress-step done"><div class="step-dot">&#10003;</div><span>2D water</span></div>
+  <div class="step-connector"></div>
+  <div class="progress-step done"><div class="step-dot">&#10003;</div><span>Skull layer</span></div>
+  <div class="step-connector"></div>
+  <div class="progress-step done"><div class="step-dot">&#10003;</div><span>First 3D sim</span></div>
+  <div class="step-connector"></div>
+  <div class="progress-step done"><div class="step-dot">&#10003;</div><span>3D + skull</span></div>
+  <div class="step-connector"></div>
+  <div class="progress-step active"><div class="step-dot">5</div><span>Clinical pipeline</span></div>
+</div>
+
+<div class="layout">
+
+<nav class="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-label">On this page</div>
+    <div class="sidebar-item active" onclick="goTo('intro')"><span class="si-icon">&#127919;</span> What changes at Level 5</div>
+    <div class="sidebar-item" onclick="goTo('tools')"><span class="si-icon">&#128300;</span> Real-world tools</div>
+    <div class="sidebar-item" onclick="goTo('pipeline')"><span class="si-icon">&#128279;</span> Full pipeline walkthrough</div>
+    <div class="sidebar-item" onclick="goTo('bric')"><span class="si-icon">&#128301;</span> Reading BRIC &amp; PRESTUS</div>
+    <div class="sidebar-item" onclick="goTo('quiz')"><span class="si-icon">&#129504;</span> Final check</div>
+  </div>
+</nav>
+
+<main class="main">
+
+<div class="hero" id="intro">
+  <div class="hero-tag">&#127973; real patients, real images</div>
+  <h1>The full <em>clinical pipeline</em></h1>
+  <p class="hero-desc">Everything from Levels 1&#8211;4 is still here. Level 5 adds the wrapper: NIfTI image loading, kWaveArray for accurate transducer modelling, CW signals, the C++ runner for large grids, and NIfTI output. After this level, BRIC and PRESTUS are readable line by line.</p>
+  <div class="hero-meta">
+    <div class="meta-item"><div class="meta-dot" style="background:var(--gold)"></div>~45 min</div>
+    <div class="meta-item"><div class="meta-dot" style="background:var(--blue)"></div>Requires k-Wave + SimNIBS</div>
+    <div class="meta-item"><div class="meta-dot" style="background:var(--green)"></div>Unlocks BRIC &amp; PRESTUS</div>
+    <div class="meta-item"><div class="meta-dot" style="background:var(--purple)"></div>Final level</div>
+  </div>
+</div>
+
+<div class="concept-strip">
+  <div class="cc cy">
+    <div class="cc-icon">&#128194;</div>
+    <div class="cc-title">NIfTI I/O</div>
+    <div class="cc-sub">niftiread / niftiwrite for real images</div>
+    <div class="cc-tag">niftiread()</div>
+  </div>
+  <div class="cc cb">
+    <div class="cc-icon">&#127917;</div>
+    <div class="cc-title">kWaveArray</div>
+    <div class="cc-sub">Off-grid sources, no staircasing</div>
+    <div class="cc-tag">Wise 2019</div>
+  </div>
+  <div class="cc cg">
+    <div class="cc-icon">&#9889;</div>
+    <div class="cc-title">C++ runner</div>
+    <div class="cc-sub">HDF5 pipeline for 256&#179; grids</div>
+    <div class="cc-tag">kspaceFirstOrder3DC</div>
+  </div>
+  <div class="cc cp">
+    <div class="cc-icon">&#128228;</div>
+    <div class="cc-title">NIfTI output</div>
+    <div class="cc-sub">Pressure maps back to patient space</div>
+    <div class="cc-tag">niftiwrite()</div>
+  </div>
+</div>
+
+<section id="tools" class="code-section">
+  <div class="section-header">
+    <div class="sh-num">&#128300;</div>
+    <div>
+      <div class="sh-title">Real-world tools that wrap Level 4</div>
+      <div class="sh-sub">All of these call kspaceFirstOrder3D internally</div>
+    </div>
+  </div>
+  <div class="tool-grid">
+    <div class="tool-card">
+      <div class="tool-logo">&#129504;</div>
+      <div class="tool-name">BRIC tussim_skull_3D</div>
+      <div class="tool-sub">University of Plymouth. Single patient script, NeuroFUS CTX-500-4 specific.</div>
+      <div class="tool-tags"><span class="tool-tag tt-blue">MATLAB</span><span class="tool-tag tt-green">NIfTI out</span><span class="tool-tag tt-amber">CTX-500-4</span></div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-logo">&#9881;</div>
+      <div class="tool-name">PRESTUS</div>
+      <div class="tool-sub">Donders Institute. Config-driven YAML pipeline. SimNIBS integration. HPC/SLURM. MNI output.</div>
+      <div class="tool-tags"><span class="tool-tag tt-blue">MATLAB</span><span class="tool-tag tt-gold">YAML config</span><span class="tool-tag tt-purple">SimNIBS</span></div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-logo">&#128161;</div>
+      <div class="tool-name">BabelBrain</div>
+      <div class="tool-sub">Python GUI via 3D Slicer. SimNIBS segmentation. No-code interface. Used at UCL, Stanford.</div>
+      <div class="tool-tags"><span class="tool-tag tt-green">Python GUI</span><span class="tool-tag tt-blue">3D Slicer</span><span class="tool-tag tt-amber">No-code</span></div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-logo">&#128203;</div>
+      <div class="tool-name">K-Plan</div>
+      <div class="tool-sub">Commercial TUS planning software. Clinical-grade UI. FDA 510k pathway. Built on k-Wave.</div>
+      <div class="tool-tags"><span class="tool-tag tt-gold">Commercial</span><span class="tool-tag tt-blue">Clinical</span><span class="tool-tag tt-purple">k-Wave engine</span></div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-logo">&#128296;</div>
+      <div class="tool-name">SimNIBS</div>
+      <div class="tool-sub">Standard brain segmentation pipeline. The <code>charm</code> command segments T1 MRI into tissue labels.</div>
+      <div class="tool-tags"><span class="tool-tag tt-green">Python</span><span class="tool-tag tt-blue">Segmentation</span></div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-logo">&#128187;</div>
+      <div class="tool-name">3D Slicer</div>
+      <div class="tool-sub">Target coordinate selection and NIfTI output visualisation. You already know this from BabelBrain.</div>
+      <div class="tool-tags"><span class="tool-tag tt-purple">Visualisation</span><span class="tool-tag tt-gold">You know this &#10003;</span></div>
+    </div>
+  </div>
+  <div class="callout gold">
+    <div class="callout-icon">&#128161;</div>
+    <div class="callout-text">
+      <strong>The key insight</strong>
+      Every tool above is just Level 4 code with a wrapper. SimNIBS creates the tissue segmentation. niftiread loads the CT. Aubry formula runs. kspaceFirstOrder3D executes. niftiwrite saves the result. The physics is identical to what you wrote in Level 4.
+    </div>
+  </div>
+</section>
+
+<section id="pipeline" class="code-section">
+  <div class="section-header">
+    <div class="sh-num">1</div>
+    <div>
+      <div class="sh-title">Complete clinical pipeline &#8212; step by step</div>
+      <div class="sh-sub">Click each step to see the new code</div>
+    </div>
+  </div>
+
+  <div class="stepper">
+    <div class="step-tabs">
+      <button class="step-tab active" onclick="switchTab(this,'tab1')">&#9312; Segment MRI</button>
+      <button class="step-tab" onclick="switchTab(this,'tab2')">&#9313; Load NIfTI</button>
+      <button class="step-tab" onclick="switchTab(this,'tab3')">&#9314; Build medium</button>
+      <button class="step-tab" onclick="switchTab(this,'tab4')">&#9315; kWaveArray</button>
+      <button class="step-tab" onclick="switchTab(this,'tab5')">&#9316; CW simulation</button>
+      <button class="step-tab" onclick="switchTab(this,'tab6')">&#9317; Output</button>
+    </div>
+    <div class="step-panel active" id="tab1">
+      <div class="callout info"><div class="callout-icon">&#8505;&#65039;</div><div class="callout-text"><strong>This step is outside k-Wave</strong>SimNIBS runs in a terminal, not MATLAB. Run it once and save the output. Your k-Wave script reads the NIfTI files that SimNIBS produced.</div></div>
+      <div class="code-wrapper">
+        <div class="code-topbar"><div class="code-filename">terminal (bash)</div><div class="code-actions"></div></div>
+        <div class="code-body" id="tab1c">
+          <div class="line-nums">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8</div>
+          <div class="code-lines">
+        <div class="code-line"><div class="code-line-content"><span class="cmt"># SimNIBS charm segmentation (run in terminal, NOT MATLAB)</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt"># Input: T1-weighted MRI NIfTI. Takes 30-60 min.</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt"># Output: m2m_subjectID/ with tissue label NIfTI files</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line hl"><div class="code-line-content">charm sub-01 sub-01_T1w.nii.gz</div><div class="ann-trigger has" onclick="tog('at1')"><div class="ann-dot ann-gold"></div></div></div>
+        <div class="annotation-panel" id="at1"><div class="ann-title">What charm produces</div><div class="ann-body">Outputs tissue label NIfTI files: WM, GM, CSF, skull, skin, air. Each voxel gets a label 0-5. PRESTUS reads these and assigns IT'IS acoustic properties. k-Wave itself never sees labels — only the final c, rho, alpha matrices.</div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt"># PETRA alternative (no CT needed)</span></div><div class="ann-trigger has" onclick="tog('at2')"><div class="ann-dot ann-blue"></div></div></div>
+        <div class="annotation-panel" id="at2"><div class="ann-title">PETRA — pseudo-CT from MRI</div><div class="ann-body">PETRA is a Siemens UTE MRI sequence (TE~0.07ms) that makes bone visible. The UCL pipeline converts PETRA intensity to pseudo-HU then runs the same Aubry formula. Limitation: signal dropout in thick bone. Research use only, not clinical standard.</div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt"># charm sub-01 sub-01_PETRA.nii.gz --petra</span></div><div class="ann-trigger"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="step-panel" id="tab2">
+      <div class="code-wrapper">
+        <div class="code-topbar"><div class="code-filename">load_images.m</div><div class="code-actions"><button class="code-btn" onclick="copyCode('tab2c')">Copy</button></div></div>
+        <div class="code-body" id="tab2c">
+          <div class="line-nums">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15</div>
+          <div class="code-lines">
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% Load CT and T1 MRI as plain numerical matrices</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line hl"><div class="code-line-content"><span class="var">ct_img</span> <span class="op">=</span> <span class="fn">niftiread</span>(<span class="str">'sub-01_pct.nii'</span>);  <span class="cmt">% HU matrix</span></div><div class="ann-trigger has" onclick="tog('ani1')"><div class="ann-dot ann-gold"></div></div></div>
+        <div class="annotation-panel" id="ani1"><div class="ann-title">niftiread — returns raw matrix</div><div class="ann-body"><code>niftiread</code> returns a plain MATLAB numerical matrix (int16 or double). For CT, values are Hounsfield Units typically -1000 to +3000. Pass this directly into the Aubry formula — same as your synthetic HU_map from Level 4.</div></div>
+        <div class="code-line hl"><div class="code-line-content"><span class="var">t1_img</span> <span class="op">=</span> <span class="fn">niftiread</span>(<span class="str">'sub-01_T1w.nii'</span>);  <span class="cmt">% anatomy overlay</span></div><div class="ann-trigger has" onclick="tog('ani2')"><div class="ann-dot ann-blue"></div></div></div>
+        <div class="annotation-panel blue" id="ani2"><div class="ann-title">T1 MRI — used for visualisation, not physics</div><div class="ann-body">The T1 MRI is used for: (1) overlaying pressure maps onto anatomy in 3D Slicer; (2) defining target coordinates. It does NOT set acoustic properties. Brain acoustic properties come from SimNIBS tissue labels + IT'IS lookup, not MRI intensity.</div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">header</span> <span class="op">=</span> <span class="fn">niftiinfo</span>(<span class="str">'sub-01_pct.nii'</span>);  <span class="cmt">% voxel size</span></div><div class="ann-trigger has" onclick="tog('ani3')"><div class="ann-dot ann-amber"></div></div></div>
+        <div class="annotation-panel amber" id="ani3"><div class="ann-title">niftiinfo — metadata you need</div><div class="ann-body"><code>header.PixelDimensions</code> gives voxel size in mm. Real CT is typically 1x1x1mm isotropic. You need this to compute scale_factor = CT_voxel_size / sim_dx, for resampling CT to match your simulation grid.</div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% Resample CT to simulation grid resolution</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">dx_sim</span> <span class="op">=</span> <span class="num">0.5e-3</span>;            <span class="cmt">% sim grid spacing [m]</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">scale</span> <span class="op">=</span> <span class="var">header</span>.<span class="var">PixelDimensions</span> <span class="op">/</span> (<span class="var">dx_sim</span><span class="op">*</span><span class="num">1e3</span>);</div><div class="ann-trigger has" onclick="tog('ani7')"><div class="ann-dot ann-gold"></div></div></div>
+        <div class="annotation-panel" id="ani7"><div class="ann-title">Scale factor — CT to sim resolution</div><div class="ann-body">CT is typically 1mm/voxel. Sim grid is 0.5mm/voxel. scale = 1/0.5 = 2. After resampling, ct_img has 2x more voxels per mm, matching your simulation grid.</div><div class="ann-formula">scale = CT_voxel_mm / sim_dx_mm  (e.g. 1.0 / 0.5 = 2.0)</div></div>
+        <div class="code-line hl"><div class="code-line-content"><span class="var">ct_img</span> <span class="op">=</span> <span class="fn">imresize3</span>(<span class="var">ct_img</span>, <span class="str">'cubic'</span>, <span class="str">'Scale'</span>, <span class="var">scale</span>);</div><div class="ann-trigger has" onclick="tog('ani8')"><div class="ann-dot ann-blue"></div></div></div>
+        <div class="annotation-panel blue" id="ani8"><div class="ann-title">imresize3 — 3D resampling</div><div class="ann-body">Resamples the 3D CT matrix. Use 'cubic' for smooth HU interpolation. After this, ct_img has the same voxel size as your simulation grid. Pass it straight into the Aubry formula as HU_map — identical to Level 4.</div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% Transducer and focus positions (from 3D Slicer fiducials)</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">focus_coords</span> <span class="op">=</span> <span class="fn">round</span>([<span class="num">99</span>, <span class="num">161</span>, <span class="num">202</span>] <span class="op">.*</span> <span class="var">scale</span>);</div><div class="ann-trigger has" onclick="tog('ani11')"><div class="ann-dot ann-amber"></div></div></div>
+        <div class="annotation-panel amber" id="ani11"><div class="ann-title">Coordinates from 3D Slicer</div><div class="ann-body">Place a fiducial marker in 3D Slicer at your brain target. Slicer gives voxel coordinates in CT image space. Multiply by scale to get sim grid indices. Add 1 if Slicer uses 0-indexing (MATLAB indexing starts from 1).</div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">bowl_coords</span> <span class="op">=</span> <span class="fn">round</span>([<span class="num">90</span>, <span class="num">193</span>, <span class="num">262</span>] <span class="op">.*</span> <span class="var">scale</span>);</div><div class="ann-trigger"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="step-panel" id="tab3">
+      <div class="callout tip"><div class="callout-icon">&#9989;</div><div class="callout-text"><strong>Identical to Level 4</strong>Once ct_img is loaded and resampled, you run the Aubry formula exactly as in Level 4. The only addition is extracting a 256&#179; subgrid centred between the transducer and focus.</div></div>
+      <div class="code-wrapper">
+        <div class="code-topbar"><div class="code-filename">medium_from_ct.m</div><div class="code-actions"><button class="code-btn" onclick="copyCode('tab3c')">Copy</button></div></div>
+        <div class="code-body" id="tab3c">
+          <div class="line-nums">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17</div>
+          <div class="code-lines">
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% Crop 256^3 subgrid centred on midpoint between bowl and focus</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">midpoint</span> <span class="op">=</span> <span class="fn">round</span>((<span class="var">bowl_coords</span> <span class="op">+</span> <span class="var">focus_coords</span>) <span class="op">/</span> <span class="num">2</span>);</div><div class="ann-trigger has" onclick="tog('am2')"><div class="ann-dot ann-gold"></div></div></div>
+        <div class="annotation-panel" id="am2"><div class="ann-title">Why 256^3 centred on midpoint?</div><div class="ann-body">The sim grid only needs to contain the transducer, skull, and target — not the entire head. Centring on the midpoint guarantees both are inside the grid with PML margin. 256 points at 0.5mm = 128mm — large enough for most tFUS geometries.</div><div class="ann-formula">grid_span = 256 * dx = 256 * 0.5mm = 128mm</div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">half</span> <span class="op">=</span> <span class="num">128</span>;  <span class="cmt">% 256/2 = 128 grid points each side</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">HU_map</span> <span class="op">=</span> <span class="var">ct_img</span>(<span class="var">midpoint</span>(<span class="num">1</span>)<span class="op">-</span><span class="var">half</span><span class="op">+</span><span class="num">1</span>:<span class="var">midpoint</span>(<span class="num">1</span>)<span class="op">+</span><span class="var">half</span>, ...</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content">           <span class="var">midpoint</span>(<span class="num">2</span>)<span class="op">-</span><span class="var">half</span><span class="op">+</span><span class="num">1</span>:<span class="var">midpoint</span>(<span class="num">2</span>)<span class="op">+</span><span class="var">half</span>, ...</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content">           <span class="var">midpoint</span>(<span class="num">3</span>)<span class="op">-</span><span class="var">half</span><span class="op">+</span><span class="num">1</span>:<span class="var">midpoint</span>(<span class="num">3</span>)<span class="op">+</span><span class="var">half</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% From here: identical to Level 4 Aubry formula</span></div><div class="ann-trigger has" onclick="tog('am8')"><div class="ann-dot ann-green"></div></div></div>
+        <div class="annotation-panel green" id="am8"><div class="ann-title">Same code as Level 4 from here</div><div class="ann-body">Once you have HU_map (whether from real CT or synthetic), the Aubry conversion is identical. This is the pedagogical point: Level 4 applies directly to real patient data. The only difference at Level 5 is how HU_map was created.</div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">porosity</span>           <span class="op">=</span> <span class="num">1</span> <span class="op">-</span> (<span class="var">HU_map</span> <span class="op">/</span> <span class="num">1000</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">medium</span>.<span class="var">sound_speed</span>   <span class="op">=</span> <span class="num">2900</span> <span class="op">-</span> <span class="num">1480</span> <span class="op">.*</span> <span class="var">porosity</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">medium</span>.<span class="var">density</span>       <span class="op">=</span> <span class="num">1900</span> <span class="op">-</span> <span class="num">900</span> <span class="op">.*</span> <span class="var">porosity</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">medium</span>.<span class="var">alpha_coeff</span>   <span class="op">=</span> <span class="num">13.3</span> <span class="op">.*</span> <span class="var">porosity</span> <span class="op">+</span> <span class="num">0.17</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">medium</span>.<span class="var">alpha_power</span>   <span class="op">=</span> <span class="num">2.0</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">brain_mask</span>                 <span class="op">=</span> (<span class="var">HU_map</span> <span class="op">==</span> <span class="num">0</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">medium</span>.<span class="var">sound_speed</span>(<span class="var">brain_mask</span>) <span class="op">=</span> <span class="num">1560</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">medium</span>.<span class="var">density</span>(<span class="var">brain_mask</span>)     <span class="op">=</span> <span class="num">1046</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">medium</span>.<span class="var">alpha_coeff</span>(<span class="var">brain_mask</span>)  <span class="op">=</span> <span class="num">0.6</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">medium</span>.<span class="var">sound_speed_ref</span>          <span class="op">=</span> <span class="num">2900</span>;  <span class="cmt">% c_max</span></div><div class="ann-trigger"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="step-panel" id="tab4">
+      <div class="callout warn"><div class="callout-icon">&#9888;&#65039;</div><div class="callout-text"><strong>This replaces makeBowl from Level 3</strong>kWaveArray uses off-grid sources (Wise 2019) which eliminates staircasing. For a multi-element transducer, kWaveArray is mandatory — makeBowl cannot represent per-element phase delays needed for aberration correction.</div></div>
+      <div class="code-wrapper">
+        <div class="code-topbar"><div class="code-filename">kWaveArray_transducer.m</div><div class="code-actions"><button class="code-btn" onclick="copyCode('tab4c')">Copy</button></div></div>
+        <div class="code-body" id="tab4c">
+          <div class="line-nums">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22</div>
+          <div class="code-lines">
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% Convert grid indices to physical positions [m]</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">bowl_pos_m</span> <span class="op">=</span> [<span class="var">kgrid</span>.<span class="var">x_vec</span>(<span class="var">bowl_coords</span>(<span class="num">1</span>)), ...</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content">               <span class="var">kgrid</span>.<span class="var">y_vec</span>(<span class="var">bowl_coords</span>(<span class="num">2</span>)), <span class="var">kgrid</span>.<span class="var">z_vec</span>(<span class="var">bowl_coords</span>(<span class="num">3</span>))];</div><div class="ann-trigger has" onclick="tog('aka1')"><div class="ann-dot ann-gold"></div></div></div>
+        <div class="annotation-panel" id="aka1"><div class="ann-title">Grid index to physical position</div><div class="ann-body">kWaveArray takes positions in metres, not grid indices. <code>kgrid.x_vec(N)</code> converts grid index N to physical position. BRIC does exactly this conversion before calling addAnnularArray.</div><div class="ann-formula">x_vec(N) = (N - Nx/2 - 1) * dx    [metres]</div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">focus_pos_m</span> <span class="op">=</span> [<span class="var">kgrid</span>.<span class="var">x_vec</span>(<span class="var">focus_coords</span>(<span class="num">1</span>)), ...</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content">               <span class="var">kgrid</span>.<span class="var">y_vec</span>(<span class="var">focus_coords</span>(<span class="num">2</span>)), <span class="var">kgrid</span>.<span class="var">z_vec</span>(<span class="var">focus_coords</span>(<span class="num">3</span>))];</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line hl"><div class="code-line-content"><span class="cmt">% Create kWaveArray (off-grid, Wise et al. 2019)</span></div><div class="ann-trigger has" onclick="tog('aka6')"><div class="ann-dot ann-blue"></div></div></div>
+        <div class="annotation-panel blue" id="aka6"><div class="ann-title">kWaveArray vs makeBowl</div><div class="ann-body">makeBowl snaps source points to nearest grid points — staircasing error. Wise 2019 showed this error does NOT converge to zero with finer grids. kWaveArray uses a band-limiting convolution giving &lt;0.3% amplitude error at 3 PPW. Always use kWaveArray for real transducers.</div></div>
+        <div class="code-line hl"><div class="code-line-content"><span class="var">karray</span> <span class="op">=</span> <span class="fn">kWaveArray</span>(<span class="str">'SinglePrecision'</span>, <span class="kw">true</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% NeuroFUS CTX-500-4: 4-element annular array</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">source_roc</span>  <span class="op">=</span> <span class="num">63.2e-3</span>;               <span class="cmt">% radius of curvature [m]</span></div><div class="ann-trigger has" onclick="tog('aka10')"><div class="ann-dot ann-amber"></div></div></div>
+        <div class="annotation-panel amber" id="aka10"><div class="ann-title">Transducer specs from datasheet</div><div class="ann-body">These values are specific to the NeuroFUS CTX-500-4. For any transducer, look up: radius of curvature (focal depth), element diameters, frequency. The diameters array defines the four concentric ring boundaries.</div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">diameters</span>   <span class="op">=</span> [<span class="num">0</span>, <span class="num">32.2</span>, <span class="num">38.2</span>, <span class="num">54.4</span>] <span class="op">*</span> <span class="num">1e-3</span>;  <span class="cmt">% [m]</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line hl"><div class="code-line-content"><span class="var">karray</span>.<span class="fn">addAnnularArray</span>(<span class="var">bowl_pos_m</span>, <span class="var">source_roc</span>, <span class="var">diameters</span>, <span class="var">focus_pos_m</span>);</div><div class="ann-trigger has" onclick="tog('aka12')"><div class="ann-dot ann-gold"></div></div></div>
+        <div class="annotation-panel" id="aka12"><div class="ann-title">addAnnularArray — one call for all 4 elements</div><div class="ann-body">Creates 4 concentric ring elements. Each ring becomes an independent source element with its own amplitude and phase. This is how CTX-500-4 achieves electronic steering and aberration correction — by setting different phases on each ring.</div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">source</span>.<span class="var">p_mask</span> <span class="op">=</span> <span class="var">karray</span>.<span class="fn">getArrayBinaryMask</span>(<span class="var">kgrid</span>);</div><div class="ann-trigger has" onclick="tog('aka14')"><div class="ann-dot ann-blue"></div></div></div>
+        <div class="annotation-panel blue" id="aka14"><div class="ann-title">getArrayBinaryMask — replaces makeBowl result</div><div class="ann-body">Returns the same thing as makeBowl — an Nx x Ny x Nz binary matrix. The difference is HOW the 1s were chosen: kWaveArray distributes source weight optimally, while makeBowl snaps to nearest. All downstream code (sensor, kspaceFirstOrder3D) stays identical.</div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% Per-element amplitude and phase (aberration correction)</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">source_amp</span> <span class="op">=</span> <span class="fn">repmat</span>(<span class="var">pressure</span>, [<span class="num">1</span>, <span class="num">4</span>]);  <span class="cmt">% 1x4</span></div><div class="ann-trigger has" onclick="tog('aka17')"><div class="ann-dot ann-amber"></div></div></div>
+        <div class="annotation-panel amber" id="aka17"><div class="ann-title">Per-element amplitude and phase</div><div class="ann-body">source_amp is 1x4 (one per element). source_phase is 1x4 in radians. For the initial forward simulation (no correction), set all phases to 0. After time-reversal, these become the per-element corrected delays.</div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">source_phase</span> <span class="op">=</span> <span class="fn">deg2rad</span>([<span class="num">0</span>, <span class="num">0</span>, <span class="num">0</span>, <span class="num">0</span>]);   <span class="cmt">% no correction yet</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line hl"><div class="code-line-content"><span class="var">source_sig</span> <span class="op">=</span> <span class="fn">createCWSignals</span>(<span class="var">kgrid</span>.<span class="var">t_array</span>, <span class="var">freq</span>, <span class="var">source_amp</span>, <span class="var">source_phase</span>);</div><div class="ann-trigger has" onclick="tog('aka19')"><div class="ann-dot ann-gold"></div></div></div>
+        <div class="annotation-panel" id="aka19"><div class="ann-title">createCWSignals replaces toneBurst</div><div class="ann-body">Creates a continuous wave sinusoidal signal for each element. Unlike toneBurst (N cycles then silence), CW runs until steady state — matching actual tFUS transducer output. Returns a 4 x Nt matrix.</div></div>
+        <div class="code-line hl"><div class="code-line-content"><span class="var">source</span>.<span class="var">p</span>      <span class="op">=</span> <span class="var">karray</span>.<span class="fn">getDistributedSourceSignal</span>(<span class="var">kgrid</span>, <span class="var">source_sig</span>);</div><div class="ann-trigger has" onclick="tog('aka20')"><div class="ann-dot ann-blue"></div></div></div>
+        <div class="annotation-panel blue" id="aka20"><div class="ann-title">getDistributedSourceSignal — the slow step</div><div class="ann-body">Distributes the 4-element signals to every grid point in source.p_mask, weighted by the off-grid band-limiting function. Returns N_gridpoints x Nt matrix. For 256^3 grids this can take 10-30 min. Run it once and save to disk if re-running.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="step-panel" id="tab5">
+      <div class="code-wrapper">
+        <div class="code-topbar"><div class="code-filename">cw_simulation.m — full C++ HDF5 pipeline</div><div class="code-actions"><button class="code-btn" onclick="copyCode('tab5c')">Copy</button></div></div>
+        <div class="code-body" id="tab5c">
+          <div class="line-nums">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27</div>
+          <div class="code-lines">
+        <div class="code-line"><div class="code-line-content"><span class="cmt">%% Sensor: full grid — needs C++ runner</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line hl"><div class="code-line-content"><span class="var">sensor</span>.<span class="var">mask</span>              <span class="op">=</span> <span class="fn">ones</span>(<span class="var">Nx</span>, <span class="var">Ny</span>, <span class="var">Nz</span>);</div><div class="ann-trigger has" onclick="tog('acw1')"><div class="ann-dot ann-gold"></div></div></div>
+        <div class="annotation-panel" id="acw1"><div class="ann-title">Full grid sensor — only viable with C++ runner</div><div class="ann-body">Full grid on 256^3 recording all time steps = ~64 GB. The key trick: record only the last few periods (record_start_index), then extractAmpPhase reduces it to a single amplitude map. Final output is a 256^3 single-precision matrix ~ 64 MB.</div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">sensor</span>.<span class="var">record</span>             <span class="op">=</span> {<span class="str">'p'</span>};</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">ppp</span>                     <span class="op">=</span> <span class="fn">round</span>(<span class="var">ppw</span> <span class="op">/</span> <span class="var">cfl</span>);  <span class="cmt">% points per period</span></div><div class="ann-trigger has" onclick="tog('acw3')"><div class="ann-dot ann-blue"></div></div></div>
+        <div class="annotation-panel blue" id="acw3"><div class="ann-title">record_start_index — the memory-saving trick</div><div class="ann-body">CW simulation runs until steady state (~10-20 wave travel times). Only the last few periods are needed for extractAmpPhase. Setting record_start_index reduces recorded data from ~10,000 to ~300 time steps — 30x less memory.</div></div>
+        <div class="code-line hl"><div class="code-line-content"><span class="var">sensor</span>.<span class="var">record_start_index</span> <span class="op">=</span> <span class="var">kgrid</span>.<span class="var">Nt</span> <span class="op">-</span> <span class="num">3</span> <span class="op">*</span> <span class="var">ppp</span> <span class="op">+</span> <span class="num">1</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">%% C++ runner via HDF5</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">input_file</span>  <span class="op">=</span> <span class="fn">fullfile</span>(<span class="var">output_dir</span>, <span class="str">'kwave_input.h5'</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">output_file</span>  <span class="op">=</span> <span class="fn">fullfile</span>(<span class="var">output_dir</span>, <span class="str">'kwave_output.h5'</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% Step 1: save inputs to HDF5 (MATLAB writes, does not run)</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line hl"><div class="code-line-content"><span class="fn">kspaceFirstOrder3D</span>(<span class="var">kgrid</span>, <span class="var">medium</span>, <span class="var">source</span>, <span class="var">sensor</span>, <span class="var">input_args</span>{:}, ...</div><div class="ann-trigger has" onclick="tog('acw12')"><div class="ann-dot ann-gold"></div></div></div>
+        <div class="annotation-panel" id="acw12"><div class="ann-title">SaveToDisk — HDF5 pipeline step 1</div><div class="ann-body">With 'SaveToDisk', kspaceFirstOrder3D writes all inputs to an HDF5 file and exits without running the simulation. The C++ binary reads this file directly — no MATLAB memory overhead. This is the standard pattern in BRIC, PRESTUS, BabelBrain, K-Plan.</div><div class="ann-formula">kspaceFirstOrder3D(..., 'SaveToDisk', 'kwave_input.h5')</div></div>
+        <div class="code-line hl"><div class="code-line-content">    <span class="str">'SaveToDisk'</span>, <span class="var">input_file</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% Step 2: run C++ binary</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">kwave_bin</span> <span class="op">=</span> <span class="fn">fullfile</span>(<span class="fn">fileparts</span>(<span class="fn">which</span>(<span class="str">'kspaceFirstOrder3D'</span>)), ...</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content">    <span class="str">'binaries'</span>, <span class="str">'kspaceFirstOrder-OMP'</span>);</div><div class="ann-trigger has" onclick="tog('acw16')"><div class="ann-dot ann-blue"></div></div></div>
+        <div class="annotation-panel blue" id="acw16"><div class="ann-title">Finding the C++ binary automatically</div><div class="ann-body">The C++ binary is in the binaries/ subfolder of the k-Wave toolbox. <code>fileparts(which('kspaceFirstOrder3D'))</code> finds the toolbox path automatically. BRIC's linux_system case uses the same approach. On Windows: kspaceFirstOrder-OMP.exe</div></div>
+        <div class="code-line hl"><div class="code-line-content"><span class="fn">system</span>([<span class="var">kwave_bin</span> <span class="str">' -i '</span> <span class="var">input_file</span> <span class="str">' -o '</span> <span class="var">output_file</span> ...</div><div class="ann-trigger"></div></div>
+        <div class="code-line hl"><div class="code-line-content">    <span class="str">' --p_raw -s '</span> <span class="fn">num2str</span>(<span class="var">sensor</span>.<span class="var">record_start_index</span>) <span class="str">' -t 12'</span>], <span class="str">'-echo'</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% Step 3: read results back into MATLAB</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">sensor_data</span>.<span class="var">p</span> <span class="op">=</span> <span class="fn">h5read</span>(<span class="var">output_file</span>, <span class="str">'/p'</span>);</div><div class="ann-trigger has" onclick="tog('acw22')"><div class="ann-dot ann-amber"></div></div></div>
+        <div class="annotation-panel amber" id="acw22"><div class="ann-title">h5read — read HDF5 dataset</div><div class="ann-body">The C++ binary writes results to /p in the output HDF5. <code>h5read</code> loads this back into MATLAB. Shape: N_sensor_points x N_recorded_timesteps. Much smaller than full time series.</div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% Step 4: extract amplitude at source frequency</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line hl"><div class="code-line-content"><span class="var">p_amp</span> <span class="op">=</span> <span class="fn">extractAmpPhase</span>(<span class="var">sensor_data</span>.<span class="var">p</span>, <span class="num">1</span><span class="op">/</span><span class="var">kgrid</span>.<span class="var">dt</span>, <span class="var">freq</span>, ...</div><div class="ann-trigger has" onclick="tog('acw25')"><div class="ann-dot ann-gold"></div></div></div>
+        <div class="annotation-panel" id="acw25"><div class="ann-title">extractAmpPhase — FFT at source frequency</div><div class="ann-body">For CW simulation, sensor_data.p is a steady-state sinusoid at each point. extractAmpPhase performs an FFT and returns the amplitude at exactly freq. This eliminates transients and harmonics. Use this instead of p_max_all for CW.</div></div>
+        <div class="code-line hl"><div class="code-line-content">    <span class="str">'Dim'</span>, <span class="num">2</span>, <span class="str">'Window'</span>, <span class="str">'Rectangular'</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">p_amp</span> <span class="op">=</span> <span class="fn">reshape</span>(<span class="var">p_amp</span>, <span class="var">Nx</span>, <span class="var">Ny</span>, <span class="var">Nz</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="fn">system</span>([<span class="str">'rm '</span> <span class="var">input_file</span> <span class="str">' '</span> <span class="var">output_file</span>]);  <span class="cmt">% clean up</span></div><div class="ann-trigger"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="step-panel" id="tab6">
+      <div class="code-wrapper">
+        <div class="code-topbar"><div class="code-filename">output_and_safety.m</div><div class="code-actions"><button class="code-btn" onclick="copyCode('tab6c')">Copy</button></div></div>
+        <div class="code-body" id="tab6c">
+          <div class="line-nums">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22</div>
+          <div class="code-lines">
+        <div class="code-line"><div class="code-line-content"><span class="cmt">%% Safety metrics</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">p_max</span> <span class="op">=</span> <span class="fn">max</span>(<span class="var">p_amp</span>(:));</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">ISPPA</span> <span class="op">=</span> <span class="var">p_max</span>^<span class="num">2</span> <span class="op">/</span> (<span class="num">2</span><span class="op">*</span><span class="num">1046</span><span class="op">*</span><span class="num">1560</span>) <span class="op">*</span> <span class="num">1e-4</span>;  <span class="cmt">% W/cm^2</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">MI</span> <span class="op">=</span> <span class="var">p_max</span><span class="op">*</span><span class="num">1e-6</span> <span class="op">/</span> <span class="fn">sqrt</span>(<span class="var">freq</span><span class="op">*</span><span class="num">1e-6</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">%% -6dB focal volume</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">focal_mask</span> <span class="op">=</span> <span class="fn">int16</span>(<span class="var">p_amp</span> <span class="op">></span> <span class="num">0.5</span> <span class="op">*</span> <span class="var">p_max</span>);  <span class="cmt">% true -6dB threshold</span></div><div class="ann-trigger has" onclick="tog('afv1')"><div class="ann-dot ann-gold"></div></div></div>
+        <div class="annotation-panel" id="afv1"><div class="ann-title">0.5 = true -6dB in pressure</div><div class="ann-body">0.5 x p_max = -6dB in pressure amplitude. 0.71 x p_max = -3dB in pressure = FWHM (half-max intensity). BRIC uses 0.71 but incorrectly labels it -6dB. Use 0.5 for correct -6dB reporting.</div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">cc</span> <span class="op">=</span> <span class="fn">bwconncomp</span>(<span class="var">focal_mask</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">focal_vol</span> <span class="op">=</span> <span class="fn">length</span>(<span class="var">cc</span>.<span class="var">PixelIdxList</span>{<span class="num">1</span>}) <span class="op">*</span> (<span class="var">dx_sim</span><span class="op">*</span><span class="num">1e3</span>)^<span class="num">3</span>; <span class="cmt">% mm^3</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">%% Save pressure map as NIfTI in patient space</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">p_out</span> <span class="op">=</span> <span class="fn">zeros</span>(<span class="fn">size</span>(<span class="var">ct_img_orig</span>), <span class="str">'double'</span>);</div><div class="ann-trigger has" onclick="tog('ano1')"><div class="ann-dot ann-blue"></div></div></div>
+        <div class="annotation-panel blue" id="ano1"><div class="ann-title">Mapping back to patient space</div><div class="ann-body">The simulation ran on a cropped subgrid. To overlay with T1 in 3D Slicer: (1) resample p_amp back to CT resolution with imresize3; (2) place in a zeros matrix the same size as original CT; (3) write with original CT header preserving voxel size and orientation.</div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% ... insert p_amp into correct subgrid location ...</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">p_out</span> <span class="op">=</span> <span class="fn">imresize3</span>(<span class="var">p_out</span>, <span class="str">'cubic'</span>, <span class="str">'Scale'</span>, <span class="num">1</span><span class="op">./</span><span class="var">scale</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">header</span>.<span class="var">Datatype</span> <span class="op">=</span> <span class="str">'double'</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line hl"><div class="code-line-content"><span class="fn">niftiwrite</span>(<span class="var">p_out</span>, <span class="fn">fullfile</span>(<span class="var">output_dir</span>, <span class="str">'pressure_field.nii'</span>), <span class="var">header</span>);</div><div class="ann-trigger has" onclick="tog('anw1')"><div class="ann-dot ann-gold"></div></div></div>
+        <div class="annotation-panel" id="anw1"><div class="ann-title">niftiwrite — pressure map in patient space</div><div class="ann-body">The output pressure_field.nii can be loaded in 3D Slicer and overlaid on the T1 MRI to visualise where the focus landed in the patient's brain. niftiwrite uses the original CT header to preserve voxel size and orientation.</div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="fn">fprintf</span>(<span class="str">'Max pressure  : %.2f MPa\n'</span>, <span class="var">p_max</span><span class="op">*</span><span class="num">1e-6</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="fn">fprintf</span>(<span class="str">'ISPPA         : %.1f W/cm^2\n'</span>, <span class="var">ISPPA</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="fn">fprintf</span>(<span class="str">'MI            : %.2f\n'</span>, <span class="var">MI</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="fn">fprintf</span>(<span class="str">'Focal vol (-6dB): %.0f mm^3\n'</span>, <span class="var">focal_vol</span>);</div><div class="ann-trigger"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="bric" class="code-section">
+  <div class="section-header">
+    <div class="sh-num">&#128214;</div>
+    <div>
+      <div class="sh-title">Reading BRIC and PRESTUS now</div>
+      <div class="sh-sub">Every line maps to a level you have completed</div>
+    </div>
+  </div>
+  <div class="callout gold">
+    <div class="callout-icon">&#127891;</div>
+    <div class="callout-text">
+      <strong>You can now read production code</strong>
+      Every line in BRIC's tussim_skull_3D.m and PRESTUS maps to something you have learned.
+    </div>
+  </div>
+  <table class="compare-table">
+    <tr><th>BRIC code</th><th>Your level</th><th>What it does</th></tr>
+    <tr><td>niftiread(ct_filename)</td><td style="color:var(--gold)">Level 5 tab 2</td><td>Loads CT HU matrix</td></tr>
+    <tr><td>imresize3(..., scale)</td><td style="color:var(--gold)">Level 5 tab 2</td><td>Resamples CT to grid resolution</td></tr>
+    <tr><td>porosity = 1 - (model/hu_max)</td><td style="color:var(--coral)">Level 4 section 2</td><td>Aubry HU to porosity (Marsac variant)</td></tr>
+    <tr><td>kWaveArray + addAnnularArray</td><td style="color:var(--gold)">Level 5 tab 4</td><td>Off-grid sources</td></tr>
+    <tr><td>createCWSignals(..., phase)</td><td style="color:var(--gold)">Level 5 tab 4</td><td>CW signal with per-element phase</td></tr>
+    <tr><td>getDistributedSourceSignal</td><td style="color:var(--gold)">Level 5 tab 4</td><td>Distributes signals to grid points</td></tr>
+    <tr><td>sensor.record_start_index</td><td style="color:var(--gold)">Level 5 tab 5</td><td>Record only steady-state last N periods</td></tr>
+    <tr><td>kspaceFirstOrder3D + SaveToDisk</td><td style="color:var(--green)">Level 3 + L5</td><td>Write HDF5 input for C++ runner</td></tr>
+    <tr><td>system([kwave_bin ' -i ...'])</td><td style="color:var(--gold)">Level 5 tab 5</td><td>Run C++ binary from MATLAB</td></tr>
+    <tr><td>h5read(output_file, '/p')</td><td style="color:var(--gold)">Level 5 tab 5</td><td>Read results from HDF5 output</td></tr>
+    <tr><td>extractAmpPhase(..., freq)</td><td style="color:var(--gold)">Level 5 tab 5</td><td>FFT amplitude at source frequency</td></tr>
+    <tr><td>niftiwrite(p_out, header)</td><td style="color:var(--gold)">Level 5 tab 6</td><td>Save pressure map in patient space</td></tr>
+    <tr><td>kWaveDiffusion + takeTimeStep</td><td style="color:var(--blue)">Layer 10 thermal</td><td>Pennes bioheat simulation</td></tr>
+  </table>
+</section>
+
+<section id="quiz">
+  <div class="section-header">
+    <div class="sh-num">&#10003;</div>
+    <div>
+      <div class="sh-title">Final level check</div>
+      <div class="sh-sub">Three questions covering Level 5 concepts</div>
+    </div>
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-header">Question 1 of 3</div>
+    <div class="quiz-q">Why does the CW simulation use extractAmpPhase() to get pressure, while the Level 3 toneBurst simulation used p_max_all?</div>
+    <div class="quiz-options" id="q1">
+      <button class="quiz-opt" onclick="ans(this,'q1',false,'q1e')">extractAmpPhase is more accurate than p_max_all in all cases</button>
+      <button class="quiz-opt" onclick="ans(this,'q1',true,'q1e')">p_max_all captures the peak of a transient pulse correctly, but CW steady-state pressure amplitude requires an FFT at the source frequency to isolate the fundamental component from transients and harmonics</button>
+      <button class="quiz-opt" onclick="ans(this,'q1',false,'q1e')">p_max_all doesn't work with kWaveArray sources</button>
+      <button class="quiz-opt" onclick="ans(this,'q1',false,'q1e')">extractAmpPhase only works with the C++ runner</button>
+    </div>
+    <div class="quiz-explain" id="q1e">A toneBurst simulation has a clear pressure peak — p_max_all captures it correctly. A CW simulation records a steady-state sinusoid at each sensor point. The peak of this sinusoid is the amplitude you want, but p_max_all could be slightly inflated by transient startup effects. <code>extractAmpPhase</code> does an FFT on the steady-state window and returns the amplitude at exactly freq, eliminating transients and harmonic content.</div>
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-header">Question 2 of 3</div>
+    <div class="quiz-q">BRIC uses threshold p > 0.71 * max_pressure and labels it "&#8722;6dB focal volume." What is actually being computed?</div>
+    <div class="quiz-options" id="q2">
+      <button class="quiz-opt" onclick="ans(this,'q2',false,'q2e')">The -6dB pressure volume (correct label, correct threshold)</button>
+      <button class="quiz-opt" onclick="ans(this,'q2',true,'q2e')">The FWHM / -3dB intensity volume. The comment label is wrong — 0.71 x p_max = half-maximum intensity = FWHM. The true -6dB pressure threshold is 0.5 x p_max.</button>
+      <button class="quiz-opt" onclick="ans(this,'q2',false,'q2e')">The -3dB pressure volume (correct label, correct threshold)</button>
+      <button class="quiz-opt" onclick="ans(this,'q2',false,'q2e')">0.71 is close enough to 0.5 that it doesn't matter</button>
+    </div>
+    <div class="quiz-explain" id="q2e">0.71 x p_max = (1/&#8730;2) x p_max. Since intensity is proportional to p&#178;, at this pressure the intensity is 0.5 x I_max — the half-maximum intensity, i.e. FWHM, i.e. -3dB in intensity. The true -6dB pressure threshold (pressure at which intensity is 0.25 x I_max) would use 0.5 x p_max. BRIC's code computes the correct clinical FWHM but uses an incorrect comment. This distinction matters for reporting — always state which definition you are using.</div>
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-header">Question 3 of 3</div>
+    <div class="quiz-q">A colleague says "we don't need k-Wave knowledge since we just use PRESTUS — it's all automated." What is the most important reason this view is wrong?</div>
+    <div class="quiz-options" id="q3">
+      <button class="quiz-opt" onclick="ans(this,'q3',false,'q3e')">PRESTUS requires a paid license</button>
+      <button class="quiz-opt" onclick="ans(this,'q3',false,'q3e')">PRESTUS doesn't support all transducer models</button>
+      <button class="quiz-opt" onclick="ans(this,'q3',true,'q3e')">Without k-Wave knowledge, you cannot validate outputs, debug unexpected results, assess simulation assumptions, or know when the tool is being misapplied</button>
+      <button class="quiz-opt" onclick="ans(this,'q3',false,'q3e')">PRESTUS sometimes produces incorrect results</button>
+    </div>
+    <div class="quiz-explain" id="q3e">Automated tools abstract complexity — they don't remove it. When PRESTUS produces a focal spot 12mm from your target, you need to distinguish: skull refraction (expected, apply aberration correction), CT-to-grid alignment error (a pipeline bug), or wrong transducer geometry (wrong datasheet values). Without understanding PPW, CFL, Aubry, kWaveArray, and extractAmpPhase, you cannot make that distinction. Every tFUS lab expects its members to understand the simulation, not just operate the tool.</div>
+  </div>
+</section>
+
+<div class="completion" id="done">
+  <div style="font-size:48px;margin-bottom:16px;">&#127891;</div>
+  <h2>Course complete</h2>
+  <p>You now understand k-Wave from first principles to clinical pipeline. You can read BRIC, PRESTUS, and any new tFUS simulation paper with confidence.</p>
+  <div class="cert-badges">
+    <div class="cert-badge lit">&#10003; Wave physics</div>
+    <div class="cert-badge lit">&#10003; Heterogeneous medium</div>
+    <div class="cert-badge lit">&#10003; k-space pseudospectral</div>
+    <div class="cert-badge lit">&#10003; MATLAB 4 structs</div>
+    <div class="cert-badge lit">&#10003; 3D simulation</div>
+    <div class="cert-badge lit">&#10003; CT &#8594; skull</div>
+    <div class="cert-badge lit">&#10003; kWaveArray</div>
+    <div class="cert-badge lit">&#10003; C++ runner / HDF5</div>
+    <div class="cert-badge lit">&#10003; Thermal modelling</div>
+    <div class="cert-badge lit">&#10003; Safety metrics</div>
+    <div class="cert-badge lit">&#10003; Clinical pipeline</div>
+    <div class="cert-badge lit">&#10003; BRIC &amp; PRESTUS readable</div>
+  </div>
+  <div style="font-size:13px;color:var(--text-dim);margin-bottom:24px;">Where to go next</div>
+  <div class="next-steps-grid">
+    <div class="next-card">
+      <div class="next-card-title">&#128300; Lab application</div>
+      <div class="next-card-sub">Run PRESTUS or BRIC on your subject data. You now understand every line of their code.</div>
+    </div>
+    <div class="next-card">
+      <div class="next-card-title">&#128214; Key papers</div>
+      <div class="next-card-sub">Treeby &amp; Cox 2010 (k-Wave), Aubry 2003 (skull), Wise 2019 (kWaveArray), Robertson 2017 (alpha_power).</div>
+    </div>
+    <div class="next-card">
+      <div class="next-card-title">&#127891; Interview</div>
+      <div class="next-card-sub">You can now answer any k-Wave question from first-principles physics to production pipeline decisions.</div>
+    </div>
+  </div>
+</div>
+
+<div class="nav-footer">
+  <a href="#" class="nav-btn">&#8592; Level 4: 3D + skull</a>
+  <div style="font-size:12px;color:var(--gold);font-weight:600;">&#127891; All levels complete</div>
+  <a href="#" class="nav-btn primary">Course map &#8594;</a>
+</div>
+
+</main>
+</div>
+
+<script>
+function goTo(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'});document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));event.currentTarget.classList.add('active');}
+function tog(id){const p=document.getElementById(id);if(!p)return;const s=p.classList.contains('show');p.closest('.code-lines')?.querySelectorAll('.annotation-panel').forEach(x=>x.classList.remove('show'));if(!s)p.classList.add('show');}
+function copyCode(id){const el=document.getElementById(id);const text=[...el.querySelectorAll('.code-line-content')].map(l=>l.innerText).join('\n');navigator.clipboard.writeText(text).then(()=>{const b=event.currentTarget;b.textContent='&#10003; Copied!';setTimeout(()=>b.textContent='Copy',1500);});}
+function ans(btn,qId,correct,exId){document.querySelectorAll('#'+qId+' .quiz-opt').forEach(o=>o.disabled=true);btn.classList.add(correct?'correct':'wrong');document.getElementById(exId).classList.add('show');}
+function switchTab(tab, panelId){
+  document.querySelectorAll('.step-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById(panelId)?.classList.add('active');
+}
+</script>
+</body>
+</html>

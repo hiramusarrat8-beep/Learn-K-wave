@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level 4 — 3D Simulation with Skull | k-Wave Learning</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Sora:wght@300;400;600;700&display=swap');
+:root {
+  --bg:#0a0e17;--surface:#111827;--surface2:#1a2235;--surface3:#1f2d45;
+  --border:#1e2d45;--border2:#263450;
+  --blue:#4da3ff;--blue-dim:rgba(77,163,255,0.12);
+  --green:#3ecf8e;--green-dim:rgba(62,207,142,0.1);
+  --amber:#f5a623;--amber-dim:rgba(245,166,35,0.1);
+  --red:#ff6b6b;--red-dim:rgba(255,107,107,0.1);
+  --purple:#a78bfa;--purple-dim:rgba(167,139,250,0.1);
+  --teal:#38d9d9;--coral:#ff8c69;--coral-dim:rgba(255,140,105,0.1);
+  --text:#c8d6ef;--text-dim:#6b7fa3;--text-bright:#eaf2ff;
+  --mono:'JetBrains Mono',monospace;--sans:'Sora',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.7;}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(10,14,23,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:56px;}
+.logo{font-weight:700;font-size:16px;color:var(--blue);letter-spacing:-0.3px;}
+.breadcrumb{color:var(--text-dim);font-size:13px;margin-left:12px;}
+.breadcrumb span{color:var(--text);}
+.level-badge{background:var(--coral-dim);border:1px solid rgba(255,140,105,0.35);color:var(--coral);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:0.5px;}
+
+/* PROGRESS */
+.progress-track{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 32px;display:flex;gap:6px;align-items:center;overflow-x:auto;}
+.progress-step{display:flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap;font-size:12px;color:var(--text-dim);transition:color 0.2s;}
+.progress-step.active{color:var(--coral);}
+.progress-step.done{color:var(--green);}
+.step-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:1.5px solid var(--border2);background:var(--surface);color:var(--text-dim);transition:all 0.2s;flex-shrink:0;}
+.progress-step.active .step-dot{background:var(--coral);border-color:var(--coral);color:#fff;}
+.progress-step.done .step-dot{background:var(--green);border-color:var(--green);color:#fff;}
+.step-connector{width:32px;height:1px;background:var(--border2);flex-shrink:0;}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 110px);}
+
+/* SIDEBAR */
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:24px 0;position:sticky;top:110px;height:calc(100vh - 110px);overflow-y:auto;}
+.sidebar-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-dim);padding:4px 20px 8px;}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:8px 20px;cursor:pointer;font-size:13px;color:var(--text-dim);transition:all 0.15s;border-left:2px solid transparent;}
+.sidebar-item:hover{background:var(--surface2);color:var(--text);}
+.sidebar-item.active{background:var(--coral-dim);border-left-color:var(--coral);color:var(--coral);}
+.sidebar-item .si-icon{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
+
+/* MAIN */
+.main{padding:40px 48px;max-width:920px;}
+
+/* HERO */
+.hero{margin-bottom:40px;padding-bottom:32px;border-bottom:1px solid var(--border);}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:var(--coral-dim);border:1px solid rgba(255,140,105,0.3);color:var(--coral);font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:16px;letter-spacing:0.5px;text-transform:uppercase;}
+.hero h1{font-size:30px;font-weight:700;color:var(--text-bright);letter-spacing:-0.5px;line-height:1.25;margin-bottom:12px;}
+.hero h1 em{color:var(--coral);font-style:normal;}
+.hero-desc{color:var(--text-dim);font-size:15px;max-width:640px;}
+.hero-meta{display:flex;gap:20px;margin-top:20px;flex-wrap:wrap;}
+.meta-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);}
+.meta-dot{width:6px;height:6px;border-radius:50%;}
+
+/* CONCEPT STRIP */
+.concept-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:36px;}
+.concept-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 14px;position:relative;overflow:hidden;transition:all 0.2s;}
+.concept-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.concept-card.c-coral::before{background:var(--coral);}
+.concept-card.c-amber::before{background:var(--amber);}
+.concept-card.c-purple::before{background:var(--purple);}
+.concept-card.c-green::before{background:var(--green);}
+.concept-card:hover{border-color:var(--border2);transform:translateY(-1px);}
+.cc-icon{font-size:20px;margin-bottom:8px;}
+.cc-title{font-size:12px;font-weight:700;color:var(--text-bright);margin-bottom:3px;}
+.cc-sub{font-size:11px;color:var(--text-dim);}
+.cc-tag{margin-top:8px;display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;font-family:var(--mono);}
+.c-coral .cc-tag{background:var(--coral-dim);color:var(--coral);}
+.c-amber .cc-tag{background:var(--amber-dim);color:var(--amber);}
+.c-purple .cc-tag{background:var(--purple-dim);color:var(--purple);}
+.c-green .cc-tag{background:var(--green-dim);color:var(--green);}
+
+/* SECTION HEADER */
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.sh-num{width:32px;height:32px;border-radius:8px;background:var(--coral-dim);border:1px solid rgba(255,140,105,0.3);color:var(--coral);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sh-title{font-size:18px;font-weight:700;color:var(--text-bright);}
+.sh-sub{font-size:13px;color:var(--text-dim);margin-top:2px;}
+
+/* PIPELINE VISUAL */
+.pipeline{display:flex;align-items:center;gap:0;margin:24px 0;overflow-x:auto;padding-bottom:8px;}
+.pipe-step{display:flex;flex-direction:column;align-items:center;min-width:120px;}
+.pipe-box{background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:12px 10px;text-align:center;width:110px;}
+.pipe-icon{font-size:22px;margin-bottom:6px;}
+.pipe-label{font-size:11px;font-weight:700;color:var(--text-bright);line-height:1.3;}
+.pipe-sub{font-size:10px;color:var(--text-dim);margin-top:3px;}
+.pipe-arrow{font-size:18px;color:var(--text-dim);padding:0 6px;margin-top:-20px;}
+.pipe-step.highlight .pipe-box{border-color:var(--coral);background:var(--coral-dim);}
+.pipe-step.highlight .pipe-label{color:var(--coral);}
+
+/* FORMULA BOX */
+.formula-box{background:var(--surface2);border:1px solid var(--border2);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:16px 20px;margin:16px 0;font-family:var(--mono);font-size:13px;}
+.formula-title{font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--amber);font-weight:700;margin-bottom:10px;font-family:var(--sans);}
+.formula-line{color:var(--teal);line-height:2;}
+.formula-comment{color:var(--text-dim);font-style:italic;}
+
+/* CODE WRAPPER */
+.code-section{margin-bottom:36px;}
+.code-wrapper{background:#0d1424;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.code-topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:var(--surface2);border-bottom:1px solid var(--border);}
+.code-filename{font-family:var(--mono);font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:8px;}
+.code-filename::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--coral);display:inline-block;}
+.code-actions{display:flex;gap:8px;}
+.code-btn{padding:4px 12px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--text-dim);font-size:11px;cursor:pointer;font-family:var(--sans);transition:all 0.15s;}
+.code-btn:hover{background:var(--surface3);color:var(--text);}
+.code-body{display:flex;}
+.line-nums{padding:20px 12px;font-family:var(--mono);font-size:12.5px;line-height:1.9;color:var(--text-dim);text-align:right;border-right:1px solid var(--border);user-select:none;min-width:44px;opacity:0.4;}
+.code-lines{flex:1;padding:20px 0;overflow-x:auto;}
+.code-line{display:flex;align-items:stretch;min-height:24px;transition:background 0.15s;font-family:var(--mono);font-size:12.5px;line-height:1.9;}
+.code-line:hover{background:rgba(255,255,255,0.03);}
+.code-line.hl{background:rgba(255,140,105,0.07);}
+.code-line-content{padding:0 20px;white-space:pre;flex:1;}
+.ann-trigger{width:24px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity 0.15s;}
+.code-line:hover .ann-trigger{opacity:1;}
+.ann-trigger.has{opacity:0.6!important;}
+.ann-trigger.has:hover{opacity:1!important;}
+.ann-dot{width:6px;height:6px;border-radius:50%;}
+.ann-blue{background:var(--blue);}
+.ann-green{background:var(--green);}
+.ann-amber{background:var(--amber);}
+.ann-coral{background:var(--coral);}
+.ann-purple{background:var(--purple);}
+
+/* ANNOTATION PANEL */
+.annotation-panel{background:var(--surface2);border-left:3px solid var(--coral);border-radius:0 8px 8px 0;padding:14px 18px;margin:2px 0 2px 44px;font-size:13px;display:none;}
+.annotation-panel.show{display:block;}
+.annotation-panel.green{border-left-color:var(--green);}
+.annotation-panel.amber{border-left-color:var(--amber);}
+.annotation-panel.blue{border-left-color:var(--blue);}
+.annotation-panel.purple{border-left-color:var(--purple);}
+.ann-title{font-weight:700;color:var(--text-bright);margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;}
+.ann-body{color:var(--text);line-height:1.6;}
+.ann-body code{background:var(--surface3);padding:1px 6px;border-radius:3px;font-family:var(--mono);font-size:11px;color:var(--teal);}
+.ann-formula{margin-top:8px;background:var(--surface3);border-radius:6px;padding:8px 12px;font-family:var(--mono);font-size:12px;color:var(--amber);}
+
+/* TABLES */
+.compare-table{width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:24px;font-size:13px;}
+.compare-table th{background:var(--surface2);padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;border-bottom:1px solid var(--border);}
+.compare-table td{padding:10px 16px;border-bottom:1px solid var(--border);vertical-align:top;}
+.compare-table tr:last-child td{border-bottom:none;}
+.compare-table td:first-child{font-family:var(--mono);font-size:12px;color:var(--teal);width:140px;}
+
+/* CALLOUTS */
+.callout{border-radius:8px;padding:14px 18px;margin-bottom:20px;font-size:13.5px;display:flex;gap:12px;align-items:flex-start;}
+.callout.info{background:var(--blue-dim);border:1px solid rgba(77,163,255,0.2);}
+.callout.warn{background:var(--amber-dim);border:1px solid rgba(245,166,35,0.2);}
+.callout.tip{background:var(--green-dim);border:1px solid rgba(62,207,142,0.2);}
+.callout.danger{background:var(--coral-dim);border:1px solid rgba(255,140,105,0.25);}
+.callout-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.callout-text{line-height:1.6;}
+.callout-text strong{display:block;margin-bottom:3px;font-size:12px;text-transform:uppercase;letter-spacing:0.4px;}
+.callout.info .callout-text strong{color:var(--blue);}
+.callout.warn .callout-text strong{color:var(--amber);}
+.callout.tip .callout-text strong{color:var(--green);}
+.callout.danger .callout-text strong{color:var(--coral);}
+
+/* TISSUE TABLE */
+.tissue-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0 24px;}
+.tissue-card{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:14px;}
+.tissue-name{font-size:12px;font-weight:700;color:var(--text-bright);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.tissue-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.tissue-prop{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid var(--border);}
+.tissue-prop:last-child{border-bottom:none;}
+.tissue-prop .label{color:var(--text-dim);}
+.tissue-prop .value{font-family:var(--mono);color:var(--text-bright);}
+
+/* QUIZ */
+.quiz-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:24px;}
+.quiz-header{font-size:13px;color:var(--text-dim);margin-bottom:12px;}
+.quiz-q{font-size:15px;font-weight:600;color:var(--text-bright);margin-bottom:14px;}
+.quiz-options{display:flex;flex-direction:column;gap:8px;}
+.quiz-opt{padding:10px 16px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);cursor:pointer;font-size:13px;color:var(--text);transition:all 0.15s;text-align:left;font-family:var(--sans);}
+.quiz-opt:hover{border-color:var(--coral);color:var(--text-bright);}
+.quiz-opt.correct{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+.quiz-opt.wrong{background:var(--red-dim);border-color:var(--red);color:var(--red);}
+.quiz-explain{margin-top:14px;padding:12px 16px;background:var(--surface2);border-radius:8px;font-size:13px;line-height:1.6;display:none;}
+.quiz-explain.show{display:block;}
+.quiz-explain code{font-family:var(--mono);font-size:12px;background:var(--surface3);padding:1px 5px;border-radius:3px;color:var(--teal);}
+
+/* NAV FOOTER */
+.nav-footer{display:flex;justify-content:space-between;align-items:center;padding:32px 0;border-top:1px solid var(--border);margin-top:16px;}
+.nav-btn{display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:8px;border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;font-family:var(--sans);font-size:13px;text-decoration:none;transition:all 0.15s;}
+.nav-btn:hover{border-color:var(--coral);color:var(--coral);}
+.nav-btn.primary{background:var(--coral);border-color:var(--coral);color:#fff;font-weight:600;}
+.nav-btn.primary:hover{background:#e07a5f;}
+
+/* SYNTAX */
+.kw{color:#ff79c6;}.fn{color:#bd93f9;}.num{color:#f1fa8c;}.str{color:#f1fa8c;}.cmt{color:#6272a4;font-style:italic;}.var{color:#8be9fd;}.op{color:#ff79c6;}
+
+section[id]{scroll-margin-top:130px;}
+
+/* Blend this standalone page with the main Learn k-Wave site. */
+:root{
+  --bg:#0f1716;--surface:#111817;--surface2:#17211f;--surface3:#1c2c2a;
+  --border:rgba(143,167,156,0.18);--border2:rgba(143,167,156,0.28);
+  --blue:#50b8d8;--blue-dim:rgba(80,184,216,0.12);
+  --green:#50e1ba;--green-dim:rgba(80,225,186,0.11);
+  --amber:#d79b33;--amber-dim:rgba(215,155,51,0.12);
+  --red:#d75f4f;--red-dim:rgba(215,95,79,0.12);
+  --purple:#9b83bd;--purple-dim:rgba(155,131,189,0.12);
+  --teal:#0f7c80;--coral:#d75f4f;--coral-dim:rgba(215,95,79,0.12);
+  --text:#c5d7cf;--text-dim:#8fa79c;--text-bright:#eef7f4;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  --sans:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+body{background:radial-gradient(circle at 90% 10%,rgba(80,225,186,0.08),transparent 28%),var(--bg);}
+.topbar{background:rgba(15,23,22,0.95);}
+.logo{color:var(--green);font-weight:800;text-decoration:none;}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div style="display:flex;align-items:center;">
+    <a class="logo" href="index.html">Learn k-Wave</a>
+    <div class="breadcrumb">/ <span>Level 4</span> / 3D Simulation with Skull</div>
+  </div>
+  <div class="level-badge">Level 4 of 5</div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-track">
+  <div class="progress-step done"><div class="step-dot">✓</div><span>2D water</span></div>
+  <div class="step-connector"></div>
+  <div class="progress-step done"><div class="step-dot">✓</div><span>Skull layer</span></div>
+  <div class="step-connector"></div>
+  <div class="progress-step done"><div class="step-dot">✓</div><span>First 3D sim</span></div>
+  <div class="step-connector"></div>
+  <div class="progress-step active"><div class="step-dot">4</div><span>3D + skull</span></div>
+  <div class="step-connector"></div>
+  <div class="progress-step"><div class="step-dot">5</div><span>Clinical pipeline</span></div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-label">On this page</div>
+    <div class="sidebar-item active" onclick="goTo('intro')"><div class="si-icon">🎯</div>What's new at Level 4</div>
+    <div class="sidebar-item" onclick="goTo('pipeline')"><div class="si-icon">🔗</div>CT → k-Wave pipeline</div>
+    <div class="sidebar-item" onclick="goTo('tissue')"><div class="si-icon">🦴</div>Tissue reference values</div>
+    <div class="sidebar-item" onclick="goTo('hu')"><div class="si-icon">📐</div>HU → acoustic conversion</div>
+    <div class="sidebar-item" onclick="goTo('medium')"><div class="si-icon">🧱</div>Building the 3D medium</div>
+    <div class="sidebar-item" onclick="goTo('stability')"><div class="si-icon">⚖️</div>checkStability + CFL</div>
+    <div class="sidebar-item" onclick="goTo('source')"><div class="si-icon">🔊</div>Source (unchanged)</div>
+    <div class="sidebar-item" onclick="goTo('run')"><div class="si-icon">▶️</div>Running + safety metrics</div>
+    <div class="sidebar-item" onclick="goTo('fullcode')"><div class="si-icon">📄</div>Full annotated script</div>
+    <div class="sidebar-item" onclick="goTo('quiz')"><div class="si-icon">🧠</div>Check yourself</div>
+  </div>
+  <div class="sidebar-section" style="margin-top:16px;">
+    <div class="sidebar-label">Real-world connection</div>
+    <div class="sidebar-item"><div class="si-icon">🔬</div>BRIC uses this</div>
+    <div class="sidebar-item"><div class="si-icon">🧠</div>PRESTUS wraps this</div>
+    <div class="sidebar-item"><div class="si-icon">⬅</div>Level 3: 3D water</div>
+    <div class="sidebar-item"><div class="si-icon">➡</div>Level 5: clinical pipeline</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- HERO -->
+<div class="hero" id="intro">
+  <div class="hero-tag">🦴 skull enters the simulation</div>
+  <h1>3D simulation <em>through skull</em></h1>
+  <p class="hero-desc">Level 3 showed you 3D in water. This level adds the skull — every voxel gets its own acoustic properties derived from CT data. This is where the simulation becomes clinically meaningful and where BRIC, PRESTUS, BabelBrain, and K-Plan all live.</p>
+  <div class="hero-meta">
+    <div class="meta-item"><div class="meta-dot" style="background:var(--coral)"></div>Builds directly on Level 3</div>
+    <div class="meta-item"><div class="meta-dot" style="background:var(--amber)"></div>~35 min</div>
+    <div class="meta-item"><div class="meta-dot" style="background:var(--green)"></div>Simulated CT — no real images needed</div>
+    <div class="meta-item"><div class="meta-dot" style="background:var(--purple)"></div>Foundation for BRIC & PRESTUS</div>
+  </div>
+</div>
+
+<!-- CONCEPT STRIP -->
+<div class="concept-strip">
+  <div class="concept-card c-coral">
+    <div class="cc-icon">🦴</div>
+    <div class="cc-title">HU → acoustic</div>
+    <div class="cc-sub">CT Hounsfield Units to c, ρ, α per voxel</div>
+    <div class="cc-tag">Aubry 2003</div>
+  </div>
+  <div class="concept-card c-amber">
+    <div class="cc-icon">⚖️</div>
+    <div class="cc-title">checkStability</div>
+    <div class="cc-sub">Verify dt is safe with heterogeneous medium</div>
+    <div class="cc-tag">new in 3D</div>
+  </div>
+  <div class="concept-card c-purple">
+    <div class="cc-icon">🎯</div>
+    <div class="cc-title">Focal shift</div>
+    <div class="cc-sub">Skull refraction moves focus off-target</div>
+    <div class="cc-tag">Snell's Law</div>
+  </div>
+  <div class="concept-card c-green">
+    <div class="cc-icon">🛡️</div>
+    <div class="cc-title">Safety metrics</div>
+    <div class="cc-sub">ISPPA, MI, ISPTA — now with skull absorption</div>
+    <div class="cc-tag">FDA limits</div>
+  </div>
+</div>
+
+<!-- SECTION: PIPELINE -->
+<section id="pipeline" class="code-section">
+  <div class="section-header">
+    <div class="sh-num">→</div>
+    <div>
+      <div class="sh-title">The CT → k-Wave pipeline</div>
+      <div class="sh-sub">How skull properties get into the simulation</div>
+    </div>
+  </div>
+
+  <div class="pipeline">
+    <div class="pipe-step">
+      <div class="pipe-box">
+        <div class="pipe-icon">🧠</div>
+        <div class="pipe-label">CT scan</div>
+        <div class="pipe-sub">Hounsfield Units per voxel</div>
+      </div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step highlight">
+      <div class="pipe-box">
+        <div class="pipe-icon">📐</div>
+        <div class="pipe-label">HU → c, ρ, α</div>
+        <div class="pipe-sub">Aubry formula per voxel</div>
+      </div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step highlight">
+      <div class="pipe-box">
+        <div class="pipe-icon">🧱</div>
+        <div class="pipe-label">medium matrices</div>
+        <div class="pipe-sub">Nx×Ny×Nz each</div>
+      </div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step">
+      <div class="pipe-box">
+        <div class="pipe-icon">▶️</div>
+        <div class="pipe-label">kspaceFirstOrder3D</div>
+        <div class="pipe-sub">Same call as Level 3</div>
+      </div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step">
+      <div class="pipe-box">
+        <div class="pipe-icon">📊</div>
+        <div class="pipe-label">p_max, MI, ISPPA</div>
+        <div class="pipe-sub">Safety + targeting</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-icon">💡</div>
+    <div class="callout-text">
+      <strong>k-Wave never reads image files</strong>
+      k-Wave receives pre-processed numerical MATLAB matrices. It doesn't know about NIfTI, DICOM, or any image format. The conversion from CT to acoustic matrices happens before you call kspaceFirstOrder3D. In Level 5 (clinical pipeline), tools like PRESTUS and BRIC handle this conversion automatically — but the underlying k-Wave call is identical to what you write here.
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: TISSUE VALUES -->
+<section id="tissue" class="code-section">
+  <div class="section-header">
+    <div class="sh-num">1</div>
+    <div>
+      <div class="sh-title">Tissue acoustic properties — the numbers you must know</div>
+      <div class="sh-sub">IT'IS database values used by every clinical tFUS lab</div>
+    </div>
+  </div>
+
+  <div class="tissue-grid">
+    <div class="tissue-card">
+      <div class="tissue-name"><div class="tissue-dot" style="background:#4da3ff"></div>Water / coupling gel</div>
+      <div class="tissue-prop"><span class="label">c (m/s)</span><span class="value">1500</span></div>
+      <div class="tissue-prop"><span class="label">ρ (kg/m³)</span><span class="value">1000</span></div>
+      <div class="tissue-prop"><span class="label">α (dB/MHz/cm)</span><span class="value">~0</span></div>
+      <div class="tissue-prop"><span class="label">Z (MRayl)</span><span class="value">1.5</span></div>
+    </div>
+    <div class="tissue-card">
+      <div class="tissue-name"><div class="tissue-dot" style="background:#3ecf8e"></div>Brain (grey matter)</div>
+      <div class="tissue-prop"><span class="label">c (m/s)</span><span class="value">1560</span></div>
+      <div class="tissue-prop"><span class="label">ρ (kg/m³)</span><span class="value">1046</span></div>
+      <div class="tissue-prop"><span class="label">α (dB/MHz/cm)</span><span class="value">0.6</span></div>
+      <div class="tissue-prop"><span class="label">Z (MRayl)</span><span class="value">1.63</span></div>
+    </div>
+    <div class="tissue-card">
+      <div class="tissue-name"><div class="tissue-dot" style="background:#ff8c69"></div>Cortical skull bone</div>
+      <div class="tissue-prop"><span class="label">c (m/s)</span><span class="value">2900</span></div>
+      <div class="tissue-prop"><span class="label">ρ (kg/m³)</span><span class="value">1900</span></div>
+      <div class="tissue-prop"><span class="label">α (dB/MHz/cm)</span><span class="value">10–15</span></div>
+      <div class="tissue-prop"><span class="label">Z (MRayl)</span><span class="value">5.51</span></div>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-icon">⚠️</div>
+    <div class="callout-text">
+      <strong>The impedance mismatch explains everything</strong>
+      Skull Z = 5.51 MRayl, brain Z = 1.63 MRayl. The reflection coefficient at the skull-brain interface: R = (Z₂−Z₁)/(Z₂+Z₁) = (1.63−5.51)/(1.63+5.51) = −0.54. That's 54% of pressure reflected, plus Snell's law refraction of the transmitted portion. This is why tFUS is hard and why we simulate.
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: HU CONVERSION -->
+<section id="hu" class="code-section">
+  <div class="section-header">
+    <div class="sh-num">2</div>
+    <div>
+      <div class="sh-title">HU → acoustic properties (Aubry 2003 formula)</div>
+      <div class="sh-sub">The most cited formula in tFUS simulation literature</div>
+    </div>
+  </div>
+
+  <div class="formula-box">
+    <div class="formula-title">Aubry 2003 — CT Hounsfield Units to acoustic properties</div>
+    <div class="formula-line">porosity = 1 - (HU / 1000)        <span class="formula-comment">% 0=dense bone, 1=water</span></div>
+    <div class="formula-line">c  = 2900 - 1480 × porosity        <span class="formula-comment">% m/s  (2900→1420)</span></div>
+    <div class="formula-line">ρ  = 1900 - 900  × porosity        <span class="formula-comment">% kg/m³ (1900→1000)</span></div>
+    <div class="formula-line">α  = 13.3 × porosity + 0.17        <span class="formula-comment">% dB/(MHz^y cm)</span></div>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-icon">📖</div>
+    <div class="callout-text">
+      <strong>Aubry vs Marsac vs Bancel — which to use?</strong>
+      Aubry 2003 is the original and most cited. Marsac 2017 and Bancel 2021 use direct linear HU scaling (what BRIC uses) — simpler but different empirical fit. All three give similar results for tFUS planning. Your site teaches Aubry because it exposes the porosity concept explicitly, which is more physically intuitive.
+    </div>
+  </div>
+
+  <div class="code-wrapper">
+    <div class="code-topbar">
+      <div class="code-filename">hu_to_acoustic.m</div>
+      <div class="code-actions"><button class="code-btn" onclick="copyCode('hu-code')">Copy</button></div>
+    </div>
+    <div class="code-body" id="hu-code">
+      <div class="line-nums">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17</div>
+      <div class="code-lines">
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% HU map: Nx×Ny×Nz matrix of CT values</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line hl" id="h2"><div class="code-line-content"><span class="var">HU</span>.<span class="var">skull</span>(<span class="var">HU</span>.<span class="var">skull</span> <span class="op">&lt;</span> <span class="num">300</span>) <span class="op">=</span> <span class="num">0</span>;  <span class="cmt">% threshold: only bone HU≥300</span></div><div class="ann-trigger has" onclick="tog('ah2')"><div class="ann-dot ann-amber"></div></div></div>
+        <div class="annotation-panel amber" id="ah2"><div class="ann-title">HU thresholding — only use bone</div><div class="ann-body">Soft tissue (brain, skin, fat) has HU near 0–100. Setting values below 300 to zero means those voxels are treated as water in the Aubry formula. Only cortical bone (HU 300–2000) gets bone-like acoustic properties. This is standard practice — BRIC uses the same threshold.</div></div>
+
+        <div class="code-line"><div class="code-line-content"><span class="var">HU</span>.<span class="var">skull</span>(<span class="var">HU</span>.<span class="var">skull</span> <span class="op">&gt;</span> <span class="num">2000</span>) <span class="op">=</span> <span class="num">2000</span>; <span class="cmt">% cap at max bone HU</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line hl" id="h5"><div class="code-line-content"><span class="var">porosity</span> <span class="op">=</span> <span class="num">1</span> <span class="op">-</span> (<span class="var">HU</span>.<span class="var">skull</span> <span class="op">/</span> <span class="num">1000</span>);</div><div class="ann-trigger has" onclick="tog('ah5')"><div class="ann-dot ann-coral"></div></div></div>
+        <div class="annotation-panel" id="ah5"><div class="ann-title">Porosity — the physical meaning</div><div class="ann-body">Porosity is the fractional volume of the voxel that is NOT bone (i.e., filled with marrow or water). Dense cortical bone: HU=1000 → porosity=0 (pure bone). Trabecular bone: HU=500 → porosity=0.5 (half bone, half marrow). Water: HU=0 → porosity=1. The Aubry formula linearly mixes water and bone properties by porosity.</div></div>
+
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">%% ── Step 2: Map to acoustic properties ───────────</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line hl" id="h8"><div class="code-line-content"><span class="var">medium</span>.<span class="var">sound_speed</span> <span class="op">=</span> <span class="num">2900</span> <span class="op">-</span> <span class="num">1480</span> <span class="op">.*</span> <span class="var">porosity</span>; <span class="cmt">% m/s</span></div><div class="ann-trigger has" onclick="tog('ah8')"><div class="ann-dot ann-coral"></div></div></div>
+        <div class="annotation-panel" id="ah8"><div class="ann-title">Sound speed — element-wise on 3D matrix</div><div class="ann-body">This single line computes <code>c</code> for every voxel simultaneously. At porosity=0 (pure bone): c=2900. At porosity=1 (pure water): c=2900−1480=1420 m/s (Aubry's water value — note this is slightly different from the 1500 we use for free water; the formula was calibrated for skull-adjacent tissue). The result is an Nx×Ny×Nz matrix.</div><div class="ann-formula">c = c_bone × (1−porosity) + c_water × porosity<br>  = 2900×(1−p) + 1420×p = 2900 − 1480p</div></div>
+
+        <div class="code-line hl" id="h9"><div class="code-line-content"><span class="var">medium</span>.<span class="var">density</span>   <span class="op">=</span> <span class="num">1900</span> <span class="op">-</span> <span class="num">900</span>  <span class="op">.*</span> <span class="var">porosity</span>; <span class="cmt">% kg/m³</span></div><div class="ann-trigger has" onclick="tog('ah9')"><div class="ann-dot ann-coral"></div></div></div>
+        <div class="annotation-panel" id="ah9"><div class="ann-title">Density — same mixing rule</div><div class="ann-body">Linear interpolation between bone (1900 kg/m³) and water (1000 kg/m³). Together, c and ρ give impedance Z=ρc at every voxel. Z gradients between adjacent voxels determine how much energy reflects vs transmits. Dense bone: Z=2900×1900=5.51 MRayl. Brain: Z=1560×1046=1.63 MRayl.</div></div>
+
+        <div class="code-line hl" id="h10"><div class="code-line-content"><span class="var">medium</span>.<span class="var">alpha_coeff</span> <span class="op">=</span> <span class="num">13.3</span> <span class="op">.*</span> <span class="var">porosity</span> <span class="op">+</span> <span class="num">0.17</span>; <span class="cmt">% dB/MHz^y/cm</span></div><div class="ann-trigger has" onclick="tog('ah10')"><div class="ann-dot ann-amber"></div></div></div>
+        <div class="annotation-panel amber" id="ah10"><div class="ann-title">Alpha — counterintuitive direction</div><div class="ann-body">Notice: higher porosity → higher alpha. Dense bone (porosity=0) gets α=0.17, while water-like voxels (porosity=1) get α=13.47. This seems backwards at first — but Aubry's formula reflects the fact that trabecular bone (high porosity) absorbs more than dense cortical bone due to its irregular microstructure and marrow interfaces. This is empirically derived.</div></div>
+
+        <div class="code-line hl" id="h11"><div class="code-line-content"><span class="var">medium</span>.<span class="var">alpha_power</span> <span class="op">=</span> <span class="num">2.0</span>; <span class="cmt">% single scalar — applies to all voxels</span></div><div class="ann-trigger has" onclick="tog('ah11')"><div class="ann-dot ann-amber"></div></div></div>
+        <div class="annotation-panel amber" id="ah11"><div class="ann-title">alpha_power is always a scalar</div><div class="ann-body">Even though alpha_coeff is an Nx×Ny×Nz matrix, alpha_power MUST be a single scalar. k-Wave applies one power law exponent to the entire medium. You cannot have different y values in different voxels. 2.0 is used for the Aubry skull model. For soft tissue alone you might use 1.5.</div></div>
+
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">%% ── Step 3: Override non-skull voxels ────────────</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line hl" id="h14"><div class="code-line-content"><span class="var">brain_mask</span> <span class="op">=</span> (<span class="var">HU</span>.<span class="var">skull</span> <span class="op">==</span> <span class="num">0</span>);    <span class="cmt">% where HU was below threshold</span></div><div class="ann-trigger has" onclick="tog('ah14')"><div class="ann-dot ann-green"></div></div></div>
+        <div class="annotation-panel green" id="ah14"><div class="ann-title">Brain mask from the HU threshold</div><div class="ann-body">After thresholding in Step 1, all non-skull voxels have HU=0. The brain mask is simply where HU==0. These voxels will get IT'IS brain properties rather than the Aubry formula values, which would incorrectly assign them near-water properties.</div></div>
+
+        <div class="code-line" id="h15"><div class="code-line-content"><span class="var">medium</span>.<span class="var">sound_speed</span>(<span class="var">brain_mask</span>) <span class="op">=</span> <span class="num">1560</span>; <span class="cmt">% brain grey matter</span></div><div class="ann-trigger has" onclick="tog('ah15')"><div class="ann-dot ann-green"></div></div></div>
+        <div class="annotation-panel green" id="ah15"><div class="ann-title">IT'IS values — not Aubry</div><div class="ann-body">Brain tissue properties come from the IT'IS (International Telecommunication Union tissue properties) database — not from the Aubry formula. The Aubry formula only applies to skull bone. For brain: c=1560 m/s, ρ=1046 kg/m³, α=0.6 dB/MHz/cm (IT'IS values for grey matter at body temperature).</div></div>
+
+        <div class="code-line"><div class="code-line-content"><span class="var">medium</span>.<span class="var">density</span>(<span class="var">brain_mask</span>)     <span class="op">=</span> <span class="num">1046</span>; <span class="cmt">% kg/m³</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">medium</span>.<span class="var">alpha_coeff</span>(<span class="var">brain_mask</span>)  <span class="op">=</span> <span class="num">0.6</span>;  <span class="cmt">% dB/MHz^y/cm</span></div><div class="ann-trigger"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: SIMULATED CT -->
+<section id="medium" class="code-section">
+  <div class="section-header">
+    <div class="sh-num">3</div>
+    <div>
+      <div class="sh-title">Building a simulated skull for MATLAB Online</div>
+      <div class="sh-sub">No real CT needed — create a synthetic skull slab to test the pipeline</div>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-icon">✅</div>
+    <div class="callout-text">
+      <strong>For learning: use a synthetic skull</strong>
+      Real CT data needs DICOM/NIfTI readers and image registration — that's Level 5. For now, create a simplified numerical skull: a curved slab with realistic HU values. The physics and code are identical to a real CT — only the input matrix differs.
+    </div>
+  </div>
+
+  <div class="code-wrapper">
+    <div class="code-topbar">
+      <div class="code-filename">synthetic_skull_3D.m</div>
+      <div class="code-actions"><button class="code-btn" onclick="copyCode('skull-code')">Copy</button></div>
+    </div>
+    <div class="code-body" id="skull-code">
+      <div class="line-nums">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23</div>
+      <div class="code-lines">
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% Create a synthetic skull slab with realistic HU values</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% Skull: occupies x = 12–18 mm from the transducer</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line" id="sk4"><div class="code-line-content"><span class="var">skull_thickness_mm</span> <span class="op">=</span> <span class="num">6</span>;    <span class="cmt">% typical human parietal bone</span></div><div class="ann-trigger has" onclick="tog('ask4')"><div class="ann-dot ann-amber"></div></div></div>
+        <div class="annotation-panel amber" id="ask4"><div class="ann-title">Typical skull thickness</div><div class="ann-body">Adult parietal bone is 5–8 mm thick. A 6 mm synthetic skull at dx=0.5 mm = 12 grid points. Real patient skull varies by location: frontal bone (where most tFUS targets are) is typically 6–9 mm.</div></div>
+
+        <div class="code-line" id="sk5"><div class="code-line-content"><span class="var">skull_start</span>  <span class="op">=</span> <span class="fn">round</span>(<span class="num">12e-3</span> <span class="op">/</span> <span class="var">dx</span>);  <span class="cmt">% grid index where skull starts</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">skull_end</span>    <span class="op">=</span> <span class="var">skull_start</span> <span class="op">+</span> <span class="fn">round</span>(<span class="var">skull_thickness_mm</span><span class="op">*</span><span class="num">1e-3</span><span class="op">/</span><span class="var">dx</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line" id="sk8"><div class="code-line-content"><span class="var">HU_map</span> <span class="op">=</span> <span class="fn">zeros</span>(<span class="var">Nx</span>, <span class="var">Ny</span>, <span class="var">Nz</span>);       <span class="cmt">% start with all zeros (water)</span></div><div class="ann-trigger has" onclick="tog('ask8')"><div class="ann-dot ann-coral"></div></div></div>
+        <div class="annotation-panel" id="ask8"><div class="ann-title">HU=0 means water everywhere to start</div><div class="ann-body">Initialise the entire grid as HU=0 (water). Then fill in the skull region. The Aubry formula will convert HU=0 voxels to water properties and HU=700 voxels to bone properties. The transducer coupling medium (water) naturally gets the right properties.</div></div>
+
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% Dense cortical bone outer table: HU ~1000</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">HU_map</span>(<span class="var">skull_start</span>:<span class="var">skull_start</span><span class="op">+</span><span class="num">2</span>, :, :) <span class="op">=</span> <span class="num">1000</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% Trabecular (diploe) interior: HU ~400–600 (lower density)</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line" id="sk14"><div class="code-line-content"><span class="var">HU_map</span>(<span class="var">skull_start</span><span class="op">+</span><span class="num">3</span>:<span class="var">skull_end</span><span class="op">-</span><span class="num">3</span>, :, :) <span class="op">=</span> <span class="num">500</span>; <span class="cmt">% diploe</span></div><div class="ann-trigger has" onclick="tog('ask14')"><div class="ann-dot ann-amber"></div></div></div>
+        <div class="annotation-panel amber" id="ask14"><div class="ann-title">Three-layer skull structure</div><div class="ann-body">Real skull has three layers: (1) outer cortical table — dense cortical bone, HU ≈ 900–1200; (2) diploe — trabecular/spongy bone with marrow, HU ≈ 300–600 — this layer absorbs most ultrasound energy; (3) inner cortical table — dense bone, HU ≈ 800–1100. This 3-layer structure is why skull is such a challenging barrier for ultrasound.</div></div>
+
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% Dense cortical bone inner table: HU ~900</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">HU_map</span>(<span class="var">skull_end</span><span class="op">-</span><span class="num">2</span>:<span class="var">skull_end</span>, :, :) <span class="op">=</span> <span class="num">900</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line" id="sk20"><div class="code-line-content"><span class="cmt">% Now run Aubry formula on HU_map → medium structs</span></div><div class="ann-trigger has" onclick="tog('ask20')"><div class="ann-dot ann-green"></div></div></div>
+        <div class="annotation-panel green" id="ask20"><div class="ann-title">Same code as real CT from here</div><div class="ann-body">Once you have HU_map (whether from a real CT via niftiread, or this synthetic version), the Aubry conversion code is identical. This is the key pedagogical point: your Level 4 learning applies directly to real patient data. The only difference in Level 5 is how HU_map is created.</div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% (use the HU→acoustic code from Section 2 above)</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">porosity</span> <span class="op">=</span> <span class="num">1</span> <span class="op">-</span> (<span class="var">HU_map</span> <span class="op">/</span> <span class="num">1000</span>);</div><div class="ann-trigger"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: checkStability -->
+<section id="stability" class="code-section">
+  <div class="section-header">
+    <div class="sh-num">4</div>
+    <div>
+      <div class="sh-title">checkStability — the step I omitted in Level 3</div>
+      <div class="sh-sub">Essential when medium is heterogeneous. BRIC always does this.</div>
+    </div>
+  </div>
+
+  <div class="callout danger">
+    <div class="callout-icon">🚨</div>
+    <div class="callout-text">
+      <strong>Why heterogeneous media need this check</strong>
+      In water, makeTime(c_water, 0.3) guarantees stability. But with skull (c_max=2900), the same dt that's safe for water may be too large. checkStability computes the exact stability limit for your specific heterogeneous medium and returns the maximum safe dt. Always use it when medium.sound_speed is a matrix.
+    </div>
+  </div>
+
+  <div class="code-wrapper">
+    <div class="code-topbar">
+      <div class="code-filename">stability_check.m</div>
+      <div class="code-actions"><button class="code-btn" onclick="copyCode('stab-code')">Copy</button></div>
+    </div>
+    <div class="code-body" id="stab-code">
+      <div class="line-nums">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19</div>
+      <div class="code-lines">
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% ── CFL rule with heterogeneous medium ─────────────</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">cfl</span> <span class="op">=</span> <span class="num">0.3</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line" id="st4"><div class="code-line-content"><span class="cmt">% ── IMPORTANT: use c_MAX for dt calculation ─────────</span></div><div class="ann-trigger has" onclick="tog('ast4')"><div class="ann-dot ann-coral"></div></div></div>
+        <div class="annotation-panel" id="ast4"><div class="ann-title">Always use c_max, never c_brain</div><div class="ann-body">The CFL condition must be satisfied for the fastest wave in the medium. If you compute dt from c_brain=1560 but skull has c=2900, the wave in the skull covers nearly twice the distance per time step — violating CFL and making the simulation unstable (you'll see exploding pressure values). Always compute dt from c_max = max(medium.sound_speed(:)).</div><div class="ann-formula">dt = CFL × dx / c_max = 0.3 × 0.5e-3 / 2900 ≈ 52 ns</div></div>
+
+        <div class="code-line" id="st5"><div class="code-line-content"><span class="var">c_max</span> <span class="op">=</span> <span class="fn">max</span>(<span class="var">medium</span>.<span class="var">sound_speed</span>(:));  <span class="cmt">% = 2900 from skull</span></div><div class="ann-trigger has" onclick="tog('ast5')"><div class="ann-dot ann-amber"></div></div></div>
+        <div class="annotation-panel amber" id="ast5"><div class="ann-title">medium.sound_speed_ref — also set this</div><div class="ann-body">k-Wave uses a reference sound speed for the k-space operator κ = sinc(c_ref·k·dt/2). Set <code>medium.sound_speed_ref = c_max</code> explicitly. If you don't, k-Wave defaults to the mean, which can introduce phase errors in strongly heterogeneous media. BRIC and PRESTUS both set this.</div></div>
+
+        <div class="code-line" id="st6"><div class="code-line-content"><span class="var">medium</span>.<span class="var">sound_speed_ref</span> <span class="op">=</span> <span class="var">c_max</span>; <span class="cmt">% for k-space operator κ</span></div><div class="ann-trigger has" onclick="tog('ast6')"><div class="ann-dot ann-amber"></div></div></div>
+        <div class="annotation-panel amber" id="ast6"><div class="ann-title">Why sound_speed_ref matters</div><div class="ann-body">κ = sinc(c_ref·k·dt/2) is the k-space correction that eliminates numerical dispersion. For homogeneous media, setting c_ref = c gives exact phase correction. For heterogeneous media, c_ref is a single value applied globally — k-Wave recommends c_max to guarantee stability, accepting that phase correction is approximate in low-speed regions.</div></div>
+
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% ── Compute time array ──────────────────────────────</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">t_end</span> <span class="op">=</span> <span class="fn">sqrt</span>(<span class="var">kgrid</span>.<span class="var">x_size</span>.^<span class="num">2</span> <span class="op">+</span> <span class="var">kgrid</span>.<span class="var">y_size</span>.^<span class="num">2</span>) <span class="op">/</span> <span class="num">1500</span>; <span class="cmt">% diagonal / c_water</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">dt</span>    <span class="op">=</span> <span class="var">cfl</span> <span class="op">*</span> <span class="var">dx</span> <span class="op">/</span> <span class="var">c_max</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">Nt</span>    <span class="op">=</span> <span class="fn">round</span>(<span class="var">t_end</span> <span class="op">/</span> <span class="var">dt</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line hl" id="st13"><div class="code-line-content"><span class="cmt">% ── checkStability: verify dt is safe ──────────────</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line hl" id="st14"><div class="code-line-content"><span class="var">dt_limit</span> <span class="op">=</span> <span class="fn">checkStability</span>(<span class="var">kgrid</span>, <span class="var">medium</span>);</div><div class="ann-trigger has" onclick="tog('ast14')"><div class="ann-dot ann-green"></div></div></div>
+        <div class="annotation-panel green" id="ast14"><div class="ann-title">checkStability — what it actually computes</div><div class="ann-body"><code>checkStability</code> computes the exact stability limit from the heterogeneous medium: dt_max = 2/(c_ref × k_max) × arcsin(c_ref/c_max). If your computed dt exceeds this limit, the simulation will diverge (pressures blow up to Inf/NaN). The function returns Inf for homogeneous media (unconditionally stable) or a finite dt_limit for strongly heterogeneous cases.</div><div class="ann-formula">dt_limit = (2 / (c_ref × k_max)) × arcsin(c_ref / c_max)</div></div>
+
+        <div class="code-line hl" id="st15"><div class="code-line-content"><span class="kw">if</span> dt_limit <span class="op">~=</span> Inf <span class="op">&amp;&amp;</span> dt <span class="op">&gt;</span> dt_limit</div><div class="ann-trigger has" onclick="tog('ast15')"><div class="ann-dot ann-green"></div></div></div>
+        <div class="annotation-panel green" id="ast15"><div class="ann-title">Only override if needed</div><div class="ann-body">Inf means unconditionally stable — no need to change dt. Only override when dt_limit is finite AND your computed dt is too large. Using a smaller dt than necessary just makes the simulation slower (more time steps), not wrong. The BRIC code always overrides to dt_limit if it's finite, which is conservative but safe.</div></div>
+        <div class="code-line hl"><div class="code-line-content">    <span class="var">dt</span> <span class="op">=</span> <span class="var">dt_limit</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line hl"><div class="code-line-content">    <span class="var">Nt</span> <span class="op">=</span> <span class="fn">round</span>(<span class="var">t_end</span> <span class="op">/</span> <span class="var">dt</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line hl"><div class="code-line-content"><span class="kw">end</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">kgrid</span>.<span class="fn">setTime</span>(<span class="var">Nt</span>, <span class="var">dt</span>);</div><div class="ann-trigger"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: SOURCE (unchanged) -->
+<section id="source" class="code-section">
+  <div class="section-header">
+    <div class="sh-num">5</div>
+    <div>
+      <div class="sh-title">Source — identical to Level 3</div>
+      <div class="sh-sub">The transducer doesn't change. Only the medium changes.</div>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-icon">✅</div>
+    <div class="callout-text">
+      <strong>This is the key insight</strong>
+      Adding a skull to your simulation changes only medium.sound_speed, medium.density, and medium.alpha_coeff. The source (makeBowl, toneBurst) and the kspaceFirstOrder3D call are identical. This is why you learned the source setup properly in Level 3 — it carries forward unchanged.
+    </div>
+  </div>
+
+  <table class="compare-table">
+    <tr><th>Struct field</th><th>Level 3 (water)</th><th>Level 4 (+ skull)</th></tr>
+    <tr><td>kgrid</td><td style="color:var(--text-dim)">kWaveGrid(Nx,dx,Ny,dy,Nz,dz)</td><td>✅ Identical</td></tr>
+    <tr><td>medium.sound_speed</td><td style="color:var(--text-dim)">1500 (scalar)</td><td style="color:var(--coral)">Nx×Ny×Nz matrix from Aubry</td></tr>
+    <tr><td>medium.density</td><td style="color:var(--text-dim)">1000 (scalar)</td><td style="color:var(--coral)">Nx×Ny×Nz matrix from Aubry</td></tr>
+    <tr><td>medium.alpha_coeff</td><td style="color:var(--text-dim)">Not set</td><td style="color:var(--coral)">Nx×Ny×Nz matrix from Aubry</td></tr>
+    <tr><td>medium.alpha_power</td><td style="color:var(--text-dim)">Not set</td><td style="color:var(--coral)">2.0 (scalar)</td></tr>
+    <tr><td>medium.sound_speed_ref</td><td style="color:var(--text-dim)">Not set</td><td style="color:var(--coral)">c_max = 2900</td></tr>
+    <tr><td>source.p_mask</td><td style="color:var(--text-dim)">makeBowl(…)</td><td>✅ Identical</td></tr>
+    <tr><td>source.p</td><td style="color:var(--text-dim)">toneBurst(…)</td><td>✅ Identical</td></tr>
+    <tr><td>sensor.mask</td><td style="color:var(--text-dim)">Slice zeros + 1</td><td>✅ Identical</td></tr>
+    <tr><td>kspaceFirstOrder3D call</td><td style="color:var(--text-dim)">Same 4 structs</td><td>✅ Identical</td></tr>
+  </table>
+</section>
+
+<!-- SECTION: RUN + SAFETY -->
+<section id="run" class="code-section">
+  <div class="section-header">
+    <div class="sh-num">6</div>
+    <div>
+      <div class="sh-title">Running and computing safety metrics</div>
+      <div class="sh-sub">ISPPA, MI — now with skull-accurate pressure values</div>
+    </div>
+  </div>
+
+  <div class="code-wrapper">
+    <div class="code-topbar">
+      <div class="code-filename">run_and_safety.m</div>
+      <div class="code-actions"><button class="code-btn" onclick="copyCode('run-code')">Copy</button></div>
+    </div>
+    <div class="code-body" id="run-code">
+      <div class="line-nums">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25</div>
+      <div class="code-lines">
+        <div class="code-line"><div class="code-line-content"><span class="cmt">%% ── Run simulation (identical call to Level 3) ────</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line hl"><div class="code-line-content"><span class="var">sensor_data</span> <span class="op">=</span> <span class="fn">kspaceFirstOrder3D</span>(<span class="var">kgrid</span>, <span class="var">medium</span>, <span class="var">source</span>, <span class="var">sensor</span>, ...</div><div class="ann-trigger"></div></div>
+        <div class="code-line hl"><div class="code-line-content">    <span class="str">'DataCast'</span>, <span class="str">'single'</span>, <span class="str">'PMLInside'</span>, <span class="kw">false</span>, <span class="str">'PlotPML'</span>, <span class="kw">false</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">%% ── Extract pressure slice ────────────────────────</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">p_max</span> <span class="op">=</span> <span class="fn">reshape</span>(<span class="var">sensor_data</span>.<span class="var">p_max_all</span>, <span class="var">Nx</span>, <span class="var">Ny</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">%% ── Safety metrics ────────────────────────────────</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line" id="r9"><div class="code-line-content"><span class="var">p_peak</span> <span class="op">=</span> <span class="fn">max</span>(<span class="var">p_max</span>(:));   <span class="cmt">% peak positive pressure [Pa]</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line" id="r11"><div class="code-line-content"><span class="cmt">% ISPPA at focus (brain tissue: ρ=1046, c=1560)</span></div><div class="ann-trigger has" onclick="tog('ar11')"><div class="ann-dot ann-coral"></div></div></div>
+        <div class="annotation-panel" id="ar11"><div class="ann-title">ISPPA — use brain tissue properties</div><div class="ann-body">ISPPA = p² / (2ρc) × 10⁻⁴ [W/cm²]. Use the local tissue properties at the focal point — brain, not skull. If you use skull properties (ρ=1900, c=2900), you'd underestimate ISPPA by a factor of ~3.6. The FDA limit is ISPPA < 190 W/cm² (diagnostic) or no limit for therapeutic, but ISPTA < 720 mW/cm² applies.</div><div class="ann-formula">ISPPA [W/cm²] = p_peak² / (2 × 1046 × 1560) × 1e-4</div></div>
+
+        <div class="code-line hl"><div class="code-line-content"><span class="var">rho_brain</span> <span class="op">=</span> <span class="num">1046</span>; <span class="var">c_brain</span> <span class="op">=</span> <span class="num">1560</span>; <span class="cmt">% IT'IS values</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line hl"><div class="code-line-content"><span class="var">ISPPA</span> <span class="op">=</span> <span class="var">p_peak</span>^<span class="num">2</span> <span class="op">/</span> (<span class="num">2</span> <span class="op">*</span> <span class="var">rho_brain</span> <span class="op">*</span> <span class="var">c_brain</span>) <span class="op">*</span> <span class="num">1e-4</span>; <span class="cmt">% W/cm²</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line" id="r16"><div class="code-line-content"><span class="cmt">% MI (mechanical index) — use p_min (negative peak)</span></div><div class="ann-trigger has" onclick="tog('ar16')"><div class="ann-dot ann-amber"></div></div></div>
+        <div class="annotation-panel amber" id="ar16"><div class="ann-title">MI uses negative peak pressure</div><div class="ann-body">MI = |p_min [MPa]| / √f₀ [MHz]. This requires recording p_min (peak negative pressure), not p_max. Add <code>'p_min_all'</code> to sensor.record. Negative pressure drives cavitation — the FDA limit MI &lt; 1.9 is designed to prevent this. For tFUS neuromodulation, typical MI is 0.1–0.5, well below the limit.</div></div>
+
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% Add 'p_min_all' to sensor.record to get p_neg</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% MI = abs(p_min_MPa) / sqrt(f0_MHz)</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">f0_MHz</span> <span class="op">=</span> <span class="var">f0</span> <span class="op">*</span> <span class="num">1e-6</span>;   <span class="cmt">% convert Hz → MHz</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">MI</span>      <span class="op">=</span> <span class="fn">abs</span>(<span class="var">p_peak</span>) <span class="op">*</span> <span class="num">1e-6</span> <span class="op">/</span> <span class="fn">sqrt</span>(<span class="var">f0_MHz</span>); <span class="cmt">% approx — use p_min ideally</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="fn">fprintf</span>(<span class="str">'ISPPA = %.1f W/cm²  (limit: 190 W/cm²)\n'</span>, <span class="var">ISPPA</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="fn">fprintf</span>(<span class="str">'MI    = %.2f        (limit: 1.9)\n'</span>, <span class="var">MI</span>);</div><div class="ann-trigger"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FULL CODE -->
+<section id="fullcode" class="code-section">
+  <div class="section-header">
+    <div class="sh-num">7</div>
+    <div>
+      <div class="sh-title">Complete Level 4 script</div>
+      <div class="sh-sub">Run in MATLAB Online — synthetic skull, no real CT needed</div>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-icon">✅</div>
+    <div class="callout-text">
+      <strong>What to observe when you run this</strong>
+      Compare p_max maps from Level 3 (water only) and this script. You'll see: (1) lower pressure at the focus — skull absorbed some energy; (2) focal spot shifted — skull refraction moved it; (3) bright ring at the inner skull surface — impedance mismatch reflection. These are the three signatures of transcranial propagation.
+    </div>
+  </div>
+
+  <div class="code-wrapper">
+    <div class="code-topbar">
+      <div class="code-filename">level4_3D_skull_simulation.m — complete script</div>
+      <div class="code-actions">
+        <button class="code-btn" onclick="copyCode('full-code')" style="background:rgba(255,140,105,0.15);color:var(--coral);border-color:rgba(255,140,105,0.3);">📋 Copy all</button>
+      </div>
+    </div>
+    <div class="code-body" id="full-code">
+      <div class="line-nums">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28<br>29<br>30<br>31<br>32<br>33<br>34<br>35<br>36<br>37<br>38<br>39<br>40<br>41<br>42<br>43<br>44<br>45<br>46<br>47<br>48<br>49<br>50<br>51<br>52<br>53<br>54<br>55<br>56<br>57<br>58<br>59<br>60<br>61<br>62<br>63<br>64<br>65<br>66<br>67<br>68<br>69<br>70<br>71<br>72<br>73<br>74<br>75<br>76<br>77</div>
+      <div class="code-lines" style="font-size:12px;">
+        <div class="code-line"><div class="code-line-content"><span class="fn">clearvars</span>; <span class="fn">close</span> <span class="str">all</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">%% ═══ 1. GRID ════════════════════════════════════════</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">Nx</span><span class="op">=</span><span class="num">128</span>; <span class="var">Ny</span><span class="op">=</span><span class="num">64</span>; <span class="var">Nz</span><span class="op">=</span><span class="num">64</span>; <span class="cmt">% elongated in x (propagation axis)</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">f0</span> <span class="op">=</span> <span class="num">500e3</span>; <span class="var">c_water</span> <span class="op">=</span> <span class="num">1500</span>; <span class="var">c_skull</span> <span class="op">=</span> <span class="num">2900</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">dx</span> <span class="op">=</span> <span class="var">c_water</span> <span class="op">/</span> (<span class="num">6</span> <span class="op">*</span> <span class="var">f0</span>);  <span class="cmt">% 6 PPW at brain speed → 0.5 mm</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">kgrid</span> <span class="op">=</span> <span class="fn">kWaveGrid</span>(<span class="var">Nx</span>,<span class="var">dx</span>,<span class="var">Ny</span>,<span class="var">dx</span>,<span class="var">Nz</span>,<span class="var">dx</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">%% ═══ 2. SKULL (SYNTHETIC CT) ═════════════════════════</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">HU_map</span> <span class="op">=</span> <span class="fn">zeros</span>(<span class="var">Nx</span>,<span class="var">Ny</span>,<span class="var">Nz</span>);     <span class="cmt">% all water to start</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">s1</span> <span class="op">=</span> <span class="fn">round</span>(<span class="num">15e-3</span><span class="op">/</span><span class="var">dx</span>);         <span class="cmt">% skull starts at 15 mm from face</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">s2</span> <span class="op">=</span> <span class="var">s1</span> <span class="op">+</span> <span class="fn">round</span>(<span class="num">6e-3</span><span class="op">/</span><span class="var">dx</span>);    <span class="cmt">% skull 6 mm thick</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">HU_map</span>(<span class="var">s1</span>:<span class="var">s1</span><span class="op">+</span><span class="num">2</span>, :, :) <span class="op">=</span> <span class="num">1000</span>;  <span class="cmt">% outer cortical table</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">HU_map</span>(<span class="var">s1</span><span class="op">+</span><span class="num">3</span>:<span class="var">s2</span><span class="op">-</span><span class="num">3</span>, :, :) <span class="op">=</span> <span class="num">500</span>;   <span class="cmt">% diploe (trabecular)</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">HU_map</span>(<span class="var">s2</span><span class="op">-</span><span class="num">2</span>:<span class="var">s2</span>, :, :) <span class="op">=</span> <span class="num">900</span>;   <span class="cmt">% inner cortical table</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">%% ═══ 3. MEDIUM (Aubry 2003) ══════════════════════════</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">porosity</span>             <span class="op">=</span> <span class="num">1</span> <span class="op">-</span> (<span class="var">HU_map</span> <span class="op">/</span> <span class="num">1000</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">medium</span>.<span class="var">sound_speed</span>   <span class="op">=</span> <span class="num">2900</span> <span class="op">-</span> <span class="num">1480</span> <span class="op">.*</span> <span class="var">porosity</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">medium</span>.<span class="var">density</span>       <span class="op">=</span> <span class="num">1900</span> <span class="op">-</span> <span class="num">900</span>  <span class="op">.*</span> <span class="var">porosity</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">medium</span>.<span class="var">alpha_coeff</span>   <span class="op">=</span> <span class="num">13.3</span> <span class="op">.*</span> <span class="var">porosity</span> <span class="op">+</span> <span class="num">0.17</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">medium</span>.<span class="var">alpha_power</span>   <span class="op">=</span> <span class="num">2.0</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">% Override brain/water voxels with IT'IS values</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">brain_mask</span> <span class="op">=</span> (<span class="var">HU_map</span> <span class="op">==</span> <span class="num">0</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">medium</span>.<span class="var">sound_speed</span>(<span class="var">brain_mask</span>)  <span class="op">=</span> <span class="num">1560</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">medium</span>.<span class="var">density</span>(<span class="var">brain_mask</span>)      <span class="op">=</span> <span class="num">1046</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">medium</span>.<span class="var">alpha_coeff</span>(<span class="var">brain_mask</span>)   <span class="op">=</span> <span class="num">0.6</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">medium</span>.<span class="var">sound_speed_ref</span>          <span class="op">=</span> <span class="var">c_skull</span>; <span class="cmt">% = c_max</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">%% ═══ 4. TIME ARRAY + STABILITY ═══════════════════════</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">cfl</span>   <span class="op">=</span> <span class="num">0.3</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">dt</span>    <span class="op">=</span> <span class="var">cfl</span> <span class="op">*</span> <span class="var">dx</span> <span class="op">/</span> <span class="var">c_skull</span>; <span class="cmt">% use c_MAX</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">t_end</span> <span class="op">=</span> <span class="fn">sqrt</span>(<span class="var">kgrid</span>.<span class="var">x_size</span>^<span class="num">2</span><span class="op">+</span><span class="var">kgrid</span>.<span class="var">y_size</span>^<span class="num">2</span>) <span class="op">/</span> <span class="var">c_water</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">Nt</span>    <span class="op">=</span> <span class="fn">round</span>(<span class="var">t_end</span><span class="op">/</span><span class="var">dt</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">dt_lim</span> <span class="op">=</span> <span class="fn">checkStability</span>(<span class="var">kgrid</span>, <span class="var">medium</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="kw">if</span> dt_lim <span class="op">~=</span> Inf <span class="op">&amp;&amp;</span> dt <span class="op">&gt;</span> dt_lim; dt<span class="op">=</span>dt_lim; Nt<span class="op">=</span><span class="fn">round</span>(<span class="var">t_end</span><span class="op">/</span>dt); <span class="kw">end</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">kgrid</span>.<span class="fn">setTime</span>(<span class="var">Nt</span>, <span class="var">dt</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">%% ═══ 5. SOURCE (same as Level 3) ═════════════════════</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">bowl_pos</span>  <span class="op">=</span> [<span class="num">1</span>, <span class="var">Ny</span><span class="op">/</span><span class="num">2</span><span class="op">+</span><span class="num">1</span>, <span class="var">Nz</span><span class="op">/</span><span class="num">2</span><span class="op">+</span><span class="num">1</span>];</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">focus_pos</span> <span class="op">=</span> [<span class="var">Nx</span><span class="op">/</span><span class="num">2</span>, <span class="var">Ny</span><span class="op">/</span><span class="num">2</span><span class="op">+</span><span class="num">1</span>, <span class="var">Nz</span><span class="op">/</span><span class="num">2</span><span class="op">+</span><span class="num">1</span>];</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">radius</span>    <span class="op">=</span> <span class="fn">round</span>(<span class="num">35e-3</span><span class="op">/</span><span class="var">dx</span>);  <span class="var">diameter</span> <span class="op">=</span> <span class="fn">round</span>(<span class="num">25e-3</span><span class="op">/</span><span class="var">dx</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="kw">if</span> <span class="fn">mod</span>(<span class="var">diameter</span>,<span class="num">2</span>)<span class="op">==</span><span class="num">0</span>; <span class="var">diameter</span><span class="op">=</span><span class="var">diameter</span><span class="op">+</span><span class="num">1</span>; <span class="kw">end</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">source</span>.<span class="var">p_mask</span> <span class="op">=</span> <span class="fn">makeBowl</span>([<span class="var">Nx</span>,<span class="var">Ny</span>,<span class="var">Nz</span>],<span class="var">bowl_pos</span>,<span class="var">radius</span>,<span class="var">diameter</span>,<span class="var">focus_pos</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">source</span>.<span class="var">p</span>      <span class="op">=</span> <span class="fn">toneBurst</span>(<span class="num">1</span><span class="op">/</span><span class="var">dt</span>, <span class="var">f0</span>, <span class="num">5</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">%% ═══ 6. SENSOR ═══════════════════════════════════════</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">sensor</span>.<span class="var">mask</span>   <span class="op">=</span> <span class="fn">zeros</span>(<span class="var">Nx</span>,<span class="var">Ny</span>,<span class="var">Nz</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">sensor</span>.<span class="var">mask</span>(:,:,<span class="var">Nz</span><span class="op">/</span><span class="num">2</span><span class="op">+</span><span class="num">1</span>) <span class="op">=</span> <span class="num">1</span>;    <span class="cmt">% z mid-plane</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">sensor</span>.<span class="var">record</span> <span class="op">=</span> {<span class="str">'p_max_all'</span>};</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">%% ═══ 7. GEOMETRY CHECK ═══════════════════════════════</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="fn">voxelPlot</span>(<span class="fn">double</span>(<span class="var">source</span>.<span class="var">p_mask</span> <span class="op">|</span> (<span class="var">HU_map</span><span class="op">&gt;</span><span class="num">300</span>))); <span class="fn">view</span>([<span class="num">127</span>,<span class="num">18</span>]);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="fn">title</span>(<span class="str">'Bowl (active) + skull slab — check before running!'</span>); <span class="fn">pause</span>(<span class="num">2</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">%% ═══ 8. RUN ══════════════════════════════════════════</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">sensor_data</span> <span class="op">=</span> <span class="fn">kspaceFirstOrder3D</span>(<span class="var">kgrid</span>,<span class="var">medium</span>,<span class="var">source</span>,<span class="var">sensor</span>, ...</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content">    <span class="str">'DataCast'</span>,<span class="str">'single'</span>, <span class="str">'PMLInside'</span>,<span class="kw">false</span>, <span class="str">'PlotPML'</span>,<span class="kw">false</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="cmt">%% ═══ 9. VISUALISE + SAFETY ═══════════════════════════</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">p_slice</span> <span class="op">=</span> <span class="fn">reshape</span>(<span class="var">sensor_data</span>.<span class="var">p_max_all</span>, <span class="var">Nx</span>, <span class="var">Ny</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="fn">figure</span>; <span class="fn">imagesc</span>(<span class="var">kgrid</span>.<span class="var">y_vec</span><span class="op">*</span><span class="num">1e3</span>,<span class="var">kgrid</span>.<span class="var">x_vec</span><span class="op">*</span><span class="num">1e3</span>,<span class="var">p_slice</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="fn">colormap</span>(<span class="fn">getColorMap</span>); <span class="fn">axis</span> <span class="str">image</span>; <span class="fn">colorbar</span>;</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="fn">xlabel</span>(<span class="str">'y [mm]'</span>); <span class="fn">ylabel</span>(<span class="str">'x [mm]'</span>); <span class="fn">title</span>(<span class="str">'Peak pressure — 3D transcranial [Pa]'</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">p_peak</span>  <span class="op">=</span> <span class="fn">max</span>(<span class="var">p_slice</span>(:));</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">ISPPA</span>   <span class="op">=</span> <span class="var">p_peak</span>^<span class="num">2</span> <span class="op">/</span> (<span class="num">2</span><span class="op">*</span><span class="num">1046</span><span class="op">*</span><span class="num">1560</span>) <span class="op">*</span> <span class="num">1e-4</span>; <span class="cmt">% W/cm²</span></div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="var">MI</span>      <span class="op">=</span> <span class="var">p_peak</span><span class="op">*</span><span class="num">1e-6</span> <span class="op">/</span> <span class="fn">sqrt</span>(<span class="var">f0</span><span class="op">*</span><span class="num">1e-6</span>);</div><div class="ann-trigger"></div></div>
+        <div class="code-line"><div class="code-line-content"><span class="fn">fprintf</span>(<span class="str">'Peak: %.0f Pa | ISPPA: %.1f W/cm² | MI: %.2f\n'</span>,<span class="var">p_peak</span>,<span class="var">ISPPA</span>,<span class="var">MI</span>);</div><div class="ann-trigger"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz">
+  <div class="section-header">
+    <div class="sh-num">✓</div>
+    <div>
+      <div class="sh-title">Check yourself</div>
+      <div class="sh-sub">Three questions before moving to Level 5</div>
+    </div>
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-header">Question 1 of 3</div>
+    <div class="quiz-q">You set medium.sound_speed from the Aubry formula, then compute dt = 0.3 × dx / 1500 (water speed). The simulation produces NaN pressure values. What went wrong?</div>
+    <div class="quiz-options" id="q1">
+      <button class="quiz-opt" onclick="ans(this,'q1',false,'q1e')">The Aubry formula is incorrect for this grid resolution</button>
+      <button class="quiz-opt" onclick="ans(this,'q1',false,'q1e')">medium.alpha_power was not set as a scalar</button>
+      <button class="quiz-opt" onclick="ans(this,'q1',true,'q1e')">dt was computed from c_water (1500) but skull has c=2900, violating CFL</button>
+      <button class="quiz-opt" onclick="ans(this,'q1',false,'q1e')">The PML is too small for a heterogeneous medium</button>
+    </div>
+    <div class="quiz-explain" id="q1e">The CFL condition requires dt ≤ CFL × dx / c_max. When skull has c=2900, computing dt from c=1500 gives a dt that is 2900/1500 = 1.93× too large. In heterogeneous media, always compute dt from <code>max(medium.sound_speed(:))</code>, then optionally verify with <code>checkStability(kgrid, medium)</code>.</div>
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-header">Question 2 of 3</div>
+    <div class="quiz-q">After running the Level 4 simulation, your p_max map shows the peak pressure is 8 mm away from your intended focus_pos. What is the correct first response?</div>
+    <div class="quiz-options" id="q2">
+      <button class="quiz-opt" onclick="ans(this,'q2',false,'q2e')">Increase grid resolution — more PPW will fix the focal shift</button>
+      <button class="quiz-opt" onclick="ans(this,'q2',false,'q2e')">Move bowl_pos closer to the skull to compensate</button>
+      <button class="quiz-opt" onclick="ans(this,'q2',true,'q2e')">This is expected — skull refraction causes focal shift. Note the actual vs intended position, then apply time-reversal correction in Level 5.</button>
+      <button class="quiz-opt" onclick="ans(this,'q2',false,'q2e')">The simulation has a bug — Level 3 water simulation had no focal shift</button>
+    </div>
+    <div class="quiz-explain" id="q2e">Focal shift is a physical effect of skull refraction — not a simulation error. The skull slows and bends the beam following Snell's law (c_skull=2900 → c_brain=1560 causes a large refraction angle). Level 3 had no shift because water is homogeneous. This is exactly why tFUS needs simulation: to predict the shift and correct for it via phase delays (aberration correction), which is the core of Level 5.</div>
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-header">Question 3 of 3</div>
+    <div class="quiz-q">medium.alpha_power = [2.0, 1.5] — you want skull to use y=2.0 and brain to use y=1.5. Will this work?</div>
+    <div class="quiz-options" id="q3">
+      <button class="quiz-opt" onclick="ans(this,'q3',false,'q3e')">Yes — k-Wave accepts a vector and applies each value to each tissue region</button>
+      <button class="quiz-opt" onclick="ans(this,'q3',false,'q3e')">Yes, if you also provide a corresponding tissue label matrix</button>
+      <button class="quiz-opt" onclick="ans(this,'q3',true,'q3e')">No — medium.alpha_power must always be a single scalar. k-Wave will throw an error.</button>
+      <button class="quiz-opt" onclick="ans(this,'q3',false,'q3e')">It will work but only use the first value and ignore the second</button>
+    </div>
+    <div class="quiz-explain" id="q3e"><code>medium.alpha_power</code> is hardcoded as a scalar in k-Wave. The power law exponent y applies to the entire medium. This is a fundamental limitation — you cannot have different y values per voxel. When BRIC uses y=1.43 (Robertson 2017) for the whole medium, it's an empirical compromise between the true skull exponent (~2.0) and the brain exponent (~1.5). Research into spatially varying alpha_power is an active area.</div>
+  </div>
+</section>
+
+<!-- NAV FOOTER -->
+<div class="nav-footer">
+  <a href="#" class="nav-btn">← Level 3: First 3D sim</a>
+  <div style="font-size:12px;color:var(--text-dim);">Level 4 complete ✓</div>
+  <a href="#" class="nav-btn primary">Level 5: Clinical pipeline →</a>
+</div>
+
+</main>
+</div>
+
+<script>
+function goTo(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'});document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));event.currentTarget.classList.add('active');}
+function tog(id){const p=document.getElementById(id);if(!p)return;const s=p.classList.contains('show');p.closest('.code-lines,.code-body')?.querySelectorAll('.annotation-panel').forEach(x=>x.classList.remove('show'));if(!s)p.classList.add('show');}
+function copyCode(id){const el=document.getElementById(id);const text=[...el.querySelectorAll('.code-line-content')].map(l=>l.innerText).join('\n');navigator.clipboard.writeText(text).then(()=>{const b=event.currentTarget;b.textContent='✓ Copied!';setTimeout(()=>b.textContent='Copy',1500);});}
+function ans(btn,qId,correct,exId){document.querySelectorAll('#'+qId+' .quiz-opt').forEach(o=>o.disabled=true);btn.classList.add(correct?'correct':'wrong');document.getElementById(exId).classList.add('show');}
+</script>
+</body>
+</html>

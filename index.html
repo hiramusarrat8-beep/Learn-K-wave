@@ -1,0 +1,1663 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A creative interactive GitHub Pages guide for learning k-Wave from fundamentals to lab-ready simulations."
+    />
+    <title>Learn k-Wave Lab Guide</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Learn k-Wave home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>Learn k-Wave</span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a href="#why-simulate">Why Simulate</a>
+        <a href="#learning-layers">Layers</a>
+        <a href="#level3-3d">3D Lab</a>
+        <a href="#safety">Safety</a>
+        <a href="#studio">Studio</a>
+        <a href="#layers">Guide</a>
+        <a href="#code">Code</a>
+        <a href="#lab">Lab Use</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">Student to lab-ready researcher</p>
+          <h1 id="hero-title">A creative k-Wave learning guide for real simulations.</h1>
+          <p>
+            Start with acoustic waves, build intuition through interactive maps, then move
+            toward heterogeneous skull models, transducer design, targeting, and reproducible
+            lab workflows.
+          </p>
+        </div>
+
+        <div class="wave-panel" aria-label="k-Wave focused-ultrasound simulation preview">
+          <canvas id="simCanvas"></canvas>
+        </div>
+      </section>
+
+      <section class="disclaimer-section">
+        <div class="disclaimer-inner">
+          <p class="disclaimer-title">Research &amp; Educational Resource (Work in Progress)</p>
+          <p>This website is an independently developed educational resource for learning k-Wave, ultrasound physics, and transcranial ultrasound simulation. The project is currently under active development, and several planned modules, interactive tools, and advanced topics are still being implemented. The current version is shared to demonstrate the project's educational structure, scientific communication, and technical development.</p>
+          <hr class="disclaimer-divider" />
+          <p class="disclaimer-title">Educational Resource Disclaimer</p>
+          <p>The interactive visualizations on this website are intended for conceptual learning and scientific intuition. They are simplified educational representations and are not validated clinical planning tools. The displayed fields should not be interpreted as quantitatively accurate predictions of ultrasound propagation, pressure, heating, or targeting.</p>
+          <p>Research-grade predictions require full-wave acoustic simulation using tools such as k-Wave, together with appropriate numerical resolution, validated tissue models, and, where applicable, patient-specific imaging data. This website is intended for educational purposes only and should not be used for treatment planning, clinical decision-making, or safety assessment.</p>
+        </div>
+      </section>
+
+      <section id="why-simulate" class="section why-section">
+        <div class="section-heading">
+          <p class="eyebrow">Start with the reason</p>
+          <h2>Why do we need simulation in the first place?</h2>
+        </div>
+
+        <div class="why-grid">
+          <article class="why-copy">
+            <h3>The wave is hidden after it enters the body.</h3>
+            <p>
+              On the outside we know the transducer position and the drive signal. Inside the
+              tissue, the wave is bent, reflected, absorbed, and delayed by structures we cannot
+              directly see during experiment. Simulation gives researcher a way to predict the
+              pressure field before they trust a setup in the lab.
+            </p>
+            <div class="reveal-list" aria-label="Simulation reveals">
+              <button class="active" data-reveal="outside">Outside setup</button>
+              <button data-reveal="hidden">Inside is unknown</button>
+              <button data-reveal="simulation">Simulation helps</button>
+            </div>
+          </article>
+
+          <article class="why-display">
+            <div class="why-image-stage" aria-live="polite">
+              <img class="why-scene why-scene-outside active" src="with_transducer.png" alt="Head with ultrasound transducer positioned outside" />
+              <img class="why-scene why-scene-hidden" src="brain-mri.jpg" alt="Brain MRI view used to discuss the hidden target region" />
+              <div class="why-scene-overlay">
+                <span id="why-scene-kicker">Outside view</span>
+                <strong id="why-scene-title">We can see the setup, not the pressure field.</strong>
+                <p id="why-scene-copy">
+                  The transducer is visible outside the head, but the ultrasound field inside tissue is not directly visible during the experiment.
+                </p>
+              </div>
+              <img class="why-scene why-scene-simulation" src="BabelBrain_img_ref.png" alt="BabelBrain reference simulation image" />
+              <span class="babelbrain-credit">Reference image from BabelBrain</span>
+              <div class="why-bowl-transducer" aria-hidden="true"></div>
+              <div class="why-wave-lines" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+            <canvas id="whyCanvas" width="920" height="520"></canvas>
+            <div class="controls why-controls">
+              <label>
+                <span>Frequency <output id="why-freq-out">500 kHz</output></span>
+                <input id="why-frequency" type="range" min="250" max="1000" step="50" value="500" />
+              </label>
+              <label>
+                <span>Skull complexity <output id="why-skull-out">medium</output></span>
+                <input id="why-skull" type="range" min="0" max="10" step="1" value="5" />
+              </label>
+              <label>
+                <span>Target depth <output id="why-depth-out">55 mm</output></span>
+                <input id="why-depth" type="range" min="35" max="80" step="5" value="55" />
+              </label>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="learning-layers" class="section layer-tabs-section">
+        <div class="section-heading">
+          <p class="eyebrow">Learning layers</p>
+          <h2>Choose a layer to open the full lesson</h2>
+        </div>
+        <div class="layer-tab-grid" role="tablist" aria-label="k-Wave learning layers">
+          <button class="layer-tab active" type="button" data-layer-tab="layer1" role="tab" aria-selected="true">
+            <span>Layer 1</span>
+            <strong>Build the physics base</strong>
+            <p>Pressure, density, speed of sound, attenuation, impedance, and aberration.</p>
+          </button>
+          <button class="layer-tab" type="button" data-layer-tab="layer2" role="tab" aria-selected="false">
+            <span>Layer 2</span>
+            <strong>Voxel-wise acoustic properties</strong>
+            <p>How images become acoustic property maps for heterogeneous simulation.</p>
+          </button>
+          <button class="layer-tab" type="button" data-layer-tab="layer3" role="tab" aria-selected="false">
+            <span>Layer 3</span>
+            <strong>k-space pseudospectral method</strong>
+            <p>Why FFT derivatives, PPW, and CFL matter for accurate wave propagation.</p>
+          </button>
+          <button class="layer-tab" type="button" data-layer-tab="layer4" role="tab" aria-selected="false">
+            <span>Layer 4</span>
+            <strong>MATLAB simulation setup</strong>
+            <p>The core objects, example scripts, solver flow, and safety outputs.</p>
+          </button>
+          <button class="layer-tab" type="button" data-layer-tab="layer5" role="tab" aria-selected="false">
+            <span>Layer 5</span>
+            <strong>Targeting and phase correction</strong>
+            <p>Grid coordinates, time reversal, focus correction, and troubleshooting.</p>
+          </button>
+          <button class="layer-tab" type="button" data-layer-tab="layer6" role="tab" aria-selected="false">
+            <span>Layer 6</span>
+            <strong>Advanced simulation decisions</strong>
+            <p>FFT grid sizes, source types, sensors, safety metrics, and research choices.</p>
+          </button>
+        </div>
+      </section>
+
+      <section id="layer1" class="section physics-primer layer-detail-panel active">
+        <div class="section-heading">
+          <p class="eyebrow">Layer 1</p>
+          <h2>Build the physics base</h2>
+        </div>
+
+        <div class="physics-shell">
+          <div class="term-grid" aria-label="Core acoustic terms">
+            <article>
+              <span>p</span>
+              <h3>Pressure</h3>
+              <p>Compression and rarefaction of tissue caused by the ultrasound wave. This is often the main field plotted in k-Wave.</p>
+            </article>
+            <article>
+              <span>c</span>
+              <h3>Speed of sound</h3>
+              <p>How fast the wave travels in a material. Changing `c` changes arrival time, wavelength, and refraction.</p>
+            </article>
+            <article>
+              <span>rho</span>
+              <h3>Density</h3>
+              <p>Mass per unit volume. Together with sound speed, density determines acoustic impedance.</p>
+            </article>
+            <article>
+              <span>Z</span>
+              <h3>Impedance</h3>
+              <p>`Z = rho c`. Large impedance jumps cause reflection at interfaces such as gel-skull and skull-brain.</p>
+            </article>
+            <article>
+              <span>alpha</span>
+              <h3>Attenuation</h3>
+              <p>Energy loss as the wave travels. Skull attenuates ultrasound much more strongly than water or brain tissue.</p>
+            </article>
+            <article>
+              <span>aberration</span>
+              <h3>Aberration</h3>
+              <p>Distortion of the wavefront caused by heterogeneous speed, density, thickness, and angle along the path.</p>
+            </article>
+          </div>
+
+          <div class="physics-table-wrap">
+            <div class="table-title">Speed of sound — why it varies</div>
+            <table class="physics-table">
+              <thead>
+                <tr>
+                  <th>Tissue</th>
+                  <th>Speed of sound (m/s)</th>
+                  <th>Density (kg/m3)</th>
+                  <th>tFUS relevance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Coupling gel / water</td>
+                  <td>~1500</td>
+                  <td>~1000</td>
+                  <td>Transducer coupling medium</td>
+                </tr>
+                <tr>
+                  <td>Brain tissue</td>
+                  <td>~1560</td>
+                  <td>~1040</td>
+                  <td>Target region</td>
+                </tr>
+                <tr>
+                  <td>Skull bone, cortical</td>
+                  <td>~2900</td>
+                  <td>~1900</td>
+                  <td>Primary aberration source</td>
+                </tr>
+                <tr>
+                  <td>Skull, trabecular</td>
+                  <td>~2100</td>
+                  <td>~1400</td>
+                  <td>Inner cancellous layer</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="aberration-note">
+            <div class="table-title">The aberration problem — corrected explanation</div>
+            <p>
+              The wave travels <strong>transducer -> gel -> skull -> brain</strong>
+              There are two refraction events: at the gel-skull interface and at the skull-brain interface.
+              The skull-brain exit is especially important because the beam must arrive correctly focused
+              inside the intended target region.
+            </p>
+            <p>
+              When a wave crosses from skull, around 2900 m/s, into brain, around 1560 m/s, it slows down
+              and bends. This bending can shift the focal spot away from the intended target. This is
+              <strong>aberration</strong>.
+            </p>
+          </div>
+
+          <div class="wavepath-wrap">
+            <div class="wavepath-header">
+              <div class="table-title">Wave propagation path — transducer to brain</div>
+            </div>
+            <canvas id="wavepathCanvas"></canvas>
+            <div class="controls wavepath-controls">
+              <label>
+                <span>Frequency <output id="wp-freq-out">500 kHz</output></span>
+                <input id="wp-frequency" type="range" min="250" max="1000" step="50" value="500" />
+              </label>
+              <label>
+                <span>Skull thickness <output id="wp-thick-out">8 mm</output></span>
+                <input id="wp-thick" type="range" min="4" max="14" step="1" value="8" />
+              </label>
+            </div>
+          </div>
+
+          <div class="parameter-grid">
+            <article>
+              <span>Typical tFUS frequency</span>
+              <strong>250-1000 kHz</strong>
+              <p>Lower frequency generally penetrates skull more easily.</p>
+            </article>
+            <article>
+              <span>ISPTA FDA limit</span>
+              <strong>720 mW/cm2</strong>
+              <p>Spatial peak temporal average intensity.</p>
+            </article>
+            <article>
+              <span>Mechanical Index limit</span>
+              <strong>MI &lt; 1.9</strong>
+              <p>MI = p_neg / sqrt(f), using pressure and frequency units carefully.</p>
+            </article>
+            <article>
+              <span>Duty cycle range</span>
+              <strong>0.5-50%</strong>
+              <p>Pulse timing strongly affects average exposure.</p>
+            </article>
+          </div>
+
+          <blockquote>
+            <span> What is the acoustic wave and why is stimulation difficult?</span>
+            <p>
+              Transcranial focused ultrasound relies on the propagation of acoustic pressure waves
+              through tissue. The central challenge is that the skull is heterogeneous and highly
+              attenuating. Cortical bone has a sound speed nearly double that of brain tissue,
+              creating impedance mismatch at gel-skull and skull-brain interfaces. These mismatches
+              cause partial reflection and spatial aberration, so the focal spot can shift away from
+              the intended target. k-Wave helps by modeling each voxel with its own acoustic
+              properties, often derived from image data.
+            </p>
+          </blockquote>
+        </div>
+      </section>
+
+      <section id="layer2" class="section layer2-section layer-detail-panel">
+        <div class="layer2-shell">
+
+          <div class="layer2-block voxel-bridge-block">
+            <div class="table-title">From brain image to simulation grid</div>
+            <div class="voxel-steps">
+              <div class="voxel-step">
+                <div class="voxel-step-badge">1</div>
+                <div>
+                  <h3>Acquire a CT or MRI scan</h3>
+                  <p>
+                    CT measures X-ray attenuation at each location and returns Hounsfield Units
+                    (HU). Air = −1000 HU, water = 0 HU, dense cortical bone ≈ 1000 HU. The image
+                    is a 3D grid of these numbers.
+                  </p>
+                </div>
+              </div>
+              <div class="voxel-step">
+                <div class="voxel-step-badge">2</div>
+                <div>
+                  <h3>Segment the image into tissue regions</h3>
+                  <p>
+                    Software such as SimNIBS or FreeSurfer identifies which voxels belong to
+                    skull, brain, CSF, and scalp. Each voxel receives a tissue label. This step
+                    is called segmentation.
+                  </p>
+                </div>
+              </div>
+              <div class="voxel-step">
+                <div class="voxel-step-badge">3</div>
+                <div>
+                  <h3>Assign three acoustic properties to every voxel</h3>
+                  <p>
+                    Each voxel's tissue label or raw HU value is converted to speed of sound
+                    c, density ρ, and attenuation coefficient α. Brain voxels can use reference
+                    tissue-property values. The result is three matrices, all the same size as
+                    the original image.
+                  </p>
+                </div>
+              </div>
+              <div class="voxel-step">
+                <div class="voxel-step-badge">4</div>
+                <div>
+                  <h3>Hand the matrices to k-Wave</h3>
+                  <p>
+                    k-Wave uses numerical arrays to define the acoustic environment. Each voxel
+                    is treated as one grid cell with its own speed of sound, density, and
+                    attenuation values. During the simulation, the pressure and particle velocity
+                    fields are updated across this voxel-wise map, so understanding acoustic
+                    property maps is the entry point for any patient-specific simulation.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="voxel-illustration">
+              <p class="voxel-caption">
+                Each square represents one voxel. The colour is its speed of sound. This is
+                literally what medium.sound_speed looks like as a matrix.
+              </p>
+              <div class="voxel-grid" aria-label="5 by 5 coloured voxel grid">
+                <span class="v-csf"></span><span class="v-scalp"></span><span class="v-skull"></span><span class="v-skull"></span><span class="v-scalp"></span>
+                <span class="v-csf"></span><span class="v-skull"></span><span class="v-skull"></span><span class="v-brain"></span><span class="v-brain"></span>
+                <span class="v-scalp"></span><span class="v-skull"></span><span class="v-brain"></span><span class="v-brain"></span><span class="v-brain"></span>
+                <span class="v-csf"></span><span class="v-csf"></span><span class="v-brain"></span><span class="v-brain"></span><span class="v-brain"></span>
+                <span class="v-scalp"></span><span class="v-csf"></span><span class="v-csf"></span><span class="v-brain"></span><span class="v-brain"></span>
+              </div>
+              <div class="voxel-legend">
+                <span><i class="v-csf"></i>Water / CSF</span>
+                <span><i class="v-scalp"></i>Scalp</span>
+                <span><i class="v-skull"></i>Skull cortical</span>
+                <span><i class="v-brain"></i>Brain grey matter</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="layer2-header">
+            <div class="layer-badge">L2</div>
+            <div>
+              <p class="layer2-eyebrow">Layer 2 · Heterogeneous Medium</p>
+              <h2>Voxel-wise Acoustic Properties</h2>
+            </div>
+          </div>
+
+          <div class="layer2-block">
+            <div class="table-title">The core idea</div>
+            <p class="layer2-body">
+              Simple simulators assume a uniform medium — same speed and density everywhere.
+              k-Wave assigns <strong>every single voxel</strong> its own acoustic properties,
+              making it a heterogeneous medium. This is what allows accurate simulation of how
+              sound behaves differently in skull bone versus brain tissue versus trabecular marrow.
+            </p>
+          </div>
+
+          <div class="layer2-block">
+            <div class="table-title">Three properties you assign per voxel</div>
+            <div class="property-cards">
+
+              <article class="property-card">
+                <h3>1. Speed of sound (c) — m/s</h3>
+                <p>
+                  Determines how fast the wave travels through that voxel. At boundaries where
+                  <code>c</code> changes abruptly, the wavefront bends according to Snell's Law.
+                  This bending is the primary cause of focal shift in transcranial ultrasound.
+                </p>
+                <div class="prop-values">
+                  <span><em>Water / gel</em> 1500 m/s</span>
+                  <span><em>Brain tissue</em> 1560 m/s</span>
+                  <span><em>Skull cortical</em> 2900 m/s</span>
+                </div>
+              </article>
+
+              <article class="property-card">
+                <h3>2. Density (ρ) — kg/m³</h3>
+                <p>
+                  Together with <code>c</code>, gives acoustic impedance:
+                  <strong>Z = ρ × c</strong> (in MRayl). When Z changes between two voxels,
+                  part of the wave reflects back. The coupling gel between transducer and skin
+                  exists purely to eliminate the air–skin Z mismatch, which would otherwise
+                  reflect ~100 % of energy.
+                </p>
+                <div class="prop-values">
+                  <span><em>Water</em> 1000 kg/m³</span>
+                  <span><em>Brain</em> 1040 kg/m³</span>
+                  <span><em>Skull cortical</em> 1900 kg/m³</span>
+                </div>
+              </article>
+
+              <article class="property-card">
+                <h3>3. Attenuation coefficient (α) — dB / (MHz<sup>y</sup> · cm)</h3>
+                <p>
+                  Determines energy loss per unit distance.
+                  <strong>Units are dB per MHz-to-the-power-y, per centimetre.</strong>
+                  The exponent <em>y</em> is set separately via
+                  <code>medium.alpha_power</code>. Skull bone attenuates roughly 20–25× more
+                  than brain tissue, which is why higher frequencies are far harder to use
+                  transcranially.
+                </p>
+                <div class="prop-values">
+                  <span><em>Brain</em> ~0.6 dB/MHz<sup>y</sup>/cm</span>
+                  <span><em>Skull cortical</em> ~10–15 dB/MHz<sup>y</sup>/cm</span>
+                </div>
+              </article>
+
+            </div>
+          </div>
+
+          <div class="layer2-block layer2-code-block">
+            <div class="table-title">How it looks in k-Wave</div>
+            <pre><code>% Scalar (uniform) — simplest case
+medium.sound_speed = 1500;          % m/s, whole grid
+medium.density     = 1000;          % kg/m³
+
+% Map (heterogeneous) — voxel-wise, same size as kgrid
+medium.sound_speed  = c_map;        % [Nx × Ny] array
+medium.density      = rho_map;      % [Nx × Ny] array
+medium.alpha_coeff  = alpha_map;    % dB / (MHz^y · cm)
+medium.alpha_power  = 1.1;          % y exponent, typically 1–2</code></pre>
+          </div>
+
+          <!-- medium.* property cards -->
+          <div class="layer2-block medium-props-block">
+            <div class="table-title">k-Wave medium struct — every field explained</div>
+            <div class="medium-prop-cards">
+
+              <div class="medium-prop-card">
+                <div class="prop-badge badge-c">c</div>
+                <div class="prop-body">
+                  <div class="prop-title-row">
+                    <code class="prop-name">medium.sound_speed</code>
+                    <span class="type-pill pill-matrix">scalar or Nx×Ny matrix</span>
+                  </div>
+                  <p>Speed of sound in m/s. Scalar = uniform. Matrix = each voxel has its own value. Controls wave speed, refraction angle, and the k-space correction operator κ.</p>
+                  <pre class="prop-code">medium.sound_speed = 1500 + ones(Nx, Ny);  % then overwrite skull columns</pre>
+                </div>
+              </div>
+
+              <div class="medium-prop-card">
+                <div class="prop-badge badge-p">p</div>
+                <div class="prop-body">
+                  <div class="prop-title-row">
+                    <code class="prop-name">medium.density</code>
+                    <span class="type-pill pill-matrix">scalar or Nx×Ny matrix</span>
+                  </div>
+                  <p>Density in kg/m³. Combined with sound_speed to give acoustic impedance Z = ρc at each voxel — controls how much reflects at tissue boundaries.</p>
+                  <pre class="prop-code">medium.density = 1000 + ones(Nx, Ny);</pre>
+                </div>
+              </div>
+
+              <div class="medium-prop-card">
+                <div class="prop-badge badge-a">α</div>
+                <div class="prop-body">
+                  <div class="prop-title-row">
+                    <code class="prop-name">medium.alpha_coeff</code>
+                    <span class="type-pill pill-unit">dB / MHz<sup>y</sup> / cm</span>
+                  </div>
+                  <p>Power law absorption coefficient. Controls energy loss to heat. Skull absorbs 4000× more than water per unit path length. Measured from ex vivo tissue samples — not derived from patient images (unlike c and ρ for skull).</p>
+                  <pre class="prop-code">medium.alpha_coeff(:, skull_cols) = 11;  % skull cortical</pre>
+                </div>
+              </div>
+
+              <div class="medium-prop-card">
+                <div class="prop-badge badge-y">y</div>
+                <div class="prop-body">
+                  <div class="prop-title-row">
+                    <code class="prop-name">medium.alpha_power</code>
+                    <span class="type-pill pill-scalar">scalar only</span>
+                  </div>
+                  <p>Power law exponent. α(f) = α₀ · f <sup>y</sup>. Water: y≈2. Soft tissue: y≈1.1. Skull: y≈0.9. Must be scalar — same power law applies to all tissues.</p>
+                  <pre class="prop-code">medium.alpha_power = 1.1;  % tissue-like</pre>
+                </div>
+              </div>
+
+              <div class="medium-prop-card">
+                <div class="prop-badge badge-ba">B/A</div>
+                <div class="prop-body">
+                  <div class="prop-title-row">
+                    <code class="prop-name">medium.BonA</code>
+                    <span class="type-pill pill-optional">optional — nonlinearity</span>
+                  </div>
+                  <p>Parameter of nonlinearity. Enables simulation of harmonic generation at high pressures. Tissue B/A ≈ 6–8. Water B/A ≈ 5. Leave unset for linear simulations.</p>
+                  <pre class="prop-code">medium.BonA = 6;  % enable nonlinear simulation</pre>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Full tissue acoustic properties table -->
+          <div class="layer2-block">
+            <div class="table-title">Full tissue acoustic properties — layer by layer</div>
+            <div class="tissue-table-wrap">
+              <table class="tissue-table">
+                <thead>
+                  <tr>
+                    <th>Tissue</th>
+                    <th>c (m/s)</th>
+                    <th>ρ (kg/m³)</th>
+                    <th>α (dB/MHz/cm)</th>
+                    <th>Z (MRayl)</th>
+                    <th>Source</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="tissue-dot" style="background:#63d1bd;"></span>Gel / Water</td>
+                    <td>1500</td><td>1000</td><td>0.002</td><td>1.50</td>
+                    <td class="tt-source">Literature</td>
+                  </tr>
+                  <tr>
+                    <td><span class="tissue-dot" style="background:#d79b33;"></span>Scalp</td>
+                    <td>1580</td><td>1090</td><td>0.5</td><td>1.72</td>
+                    <td class="tt-source">Duck 1990</td>
+                  </tr>
+                  <tr>
+                    <td><span class="tissue-dot" style="background:#e8e0cc;"></span>Skull outer cortical</td>
+                    <td>2900</td><td>1900</td><td>11</td><td>5.51</td>
+                    <td class="tt-source">Aubry 2003</td>
+                  </tr>
+                  <tr>
+                    <td><span class="tissue-dot" style="background:#a89070;"></span>Skull diploë</td>
+                    <td>1800</td><td>1300</td><td>5</td><td>2.34</td>
+                    <td class="tt-source">CT-derived</td>
+                  </tr>
+                  <tr>
+                    <td><span class="tissue-dot" style="background:#e8e0cc;"></span>Skull inner cortical</td>
+                    <td>2900</td><td>1900</td><td>11</td><td>5.51</td>
+                    <td class="tt-source">Aubry 2003</td>
+                  </tr>
+                  <tr>
+                    <td><span class="tissue-dot" style="background:#4a9fd4;"></span>CSF</td>
+                    <td>1500</td><td>1000</td><td>0.002</td><td>1.50</td>
+                    <td class="tt-source">≈ water</td>
+                  </tr>
+                  <tr>
+                    <td><span class="tissue-dot" style="background:#7ec8a0;"></span>Brain grey matter</td>
+                    <td>1560</td><td>1040</td><td>0.6</td><td>1.62</td>
+                    <td class="tt-source">IT'IS database</td>
+                  </tr>
+                  <tr>
+                    <td><span class="tissue-dot" style="background:#a0d4c0;"></span>Brain white matter</td>
+                    <td>1560</td><td>1040</td><td>0.8</td><td>1.62</td>
+                    <td class="tt-source">IT'IS database</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- CT → Acoustic properties conversion -->
+          <div class="layer2-block">
+            <div class="table-title">CT to acoustic property conversion (Aubry 2003)</div>
+            <p class="layer2-body">
+              This is the most cited formula in tFUS literature. CT measures
+              <strong>Hounsfield Units (HU)</strong>: air = −1000 HU, water = 0 HU,
+              dense cortical bone = ~1000 HU.
+            </p>
+            <pre class="layer2-pre"><code>% Step 1: Convert HU to porosity
+porosity = 1 - (HU_map / 1000);
+% porosity = 0  →  pure dense bone  (HU = 1000)
+% porosity = 1  →  pure water / air (HU = 0)
+
+% Step 2: Map porosity to acoustic properties (Aubry 2003)
+medium.sound_speed = 2900 - 1480 .* porosity;   % m/s
+medium.density     = 1900 - 900  .* porosity;   % kg/m³
+medium.alpha_coeff = 13.3  .* porosity + 0.17;  % dB/(MHz^y cm)
+medium.alpha_power = 2.0;
+
+% Step 3: Override brain / water regions
+medium.sound_speed(brain_mask) = 1560;
+medium.density(brain_mask)     = 1040;
+medium.alpha_coeff(brain_mask) = 0.6;</code></pre>
+            <p class="layer2-intuition">
+              <strong>Physical intuition:</strong> At porosity = 0 (pure dense cortical bone)
+              → c = 2900, ρ = 1900. At porosity = 1 (pure water) → c = 1420, ρ = 1000.
+              The formula linearly interpolates between bone and water values based on how
+              porous the voxel is.
+            </p>
+          </div>
+
+          <!-- Acoustic impedance and reflections table -->
+          <div class="layer2-block">
+            <div class="table-title">Acoustic impedance and reflections</div>
+            <div class="impedance-table-wrap">
+              <table class="impedance-table">
+                <thead>
+                  <tr>
+                    <th>Interface</th>
+                    <th>Z<sub>1</sub> (MRayl)</th>
+                    <th>Z<sub>2</sub> (MRayl)</th>
+                    <th>Approx. reflection</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Air → Skin <em>(no gel)</em></td>
+                    <td>0.0004</td>
+                    <td>1.6</td>
+                    <td class="reflect-high">~99% reflected</td>
+                  </tr>
+                  <tr>
+                    <td>Gel → Skin <em>(with gel)</em></td>
+                    <td>1.5</td>
+                    <td>1.6</td>
+                    <td class="reflect-low">&lt;1% reflected</td>
+                  </tr>
+                  <tr>
+                    <td>Scalp → Skull</td>
+                    <td>1.7</td>
+                    <td>5.5</td>
+                    <td class="reflect-mid">~30% reflected</td>
+                  </tr>
+                  <tr>
+                    <td>Skull → Brain</td>
+                    <td>5.5</td>
+                    <td>1.6</td>
+                    <td class="reflect-mid">~30% reflected</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- PML and Staggered Grids -->
+          <div class="layer2-block">
+            <div class="table-title">New from source papers — Perfectly Matched Layer (PML)</div>
+            <div class="knowledge-cards">
+
+              <div class="knowledge-card">
+                <p class="knowledge-label">★ Source-verified — PML</p>
+                <p>
+                  k-Wave surrounds the entire grid with a <strong>Perfectly Matched Layer (PML)</strong>
+                  — by default 20 grid points thick in 2D, 10 in 3D. Because the FFT assumes the
+                  pressure field is periodic, a wave hitting the right edge would reappear on the left
+                  (wave wrapping). The PML absorbs outgoing waves before this happens. Critical rule:
+                  <strong>never place your source or sensor inside the PML.</strong>
+                  Your usable grid is Nx minus 2 × PML_SIZE points per dimension.
+                </p>
+              </div>
+
+              <div class="knowledge-card">
+                <p class="knowledge-label">★ Source-verified — staggered grids</p>
+                <p>
+                  k-Wave uses spatially and temporally <strong>staggered grids</strong>. Pressure is
+                  computed on the regular grid; particle velocities are computed on grids shifted by
+                  half a grid spacing (Δx/2) in each direction. This is why velocity inputs/outputs
+                  in k-Wave are spatially and temporally offset from pressure. If an interviewer asks
+                  why <code>source.ux</code> and <code>source.p</code> behave differently — this is why.
+                </p>
+              </div>
+
+            </div>
+            <pre class="layer2-pre"><code>% PML accounting in practice
+PML_X_SIZE = 20;               % default in 2D
+Nx = 128 - 2*PML_X_SIZE;      % usable grid = 88 points
+% The PML occupies the outer 20 rows on each side
+% Do NOT place source / sensor inside these 20 points</code></pre>
+          </div>
+
+          <!-- Layer 2 interview answer -->
+          <div class="layer2-block">
+            <div class="table-title">Putting it together</div>
+            <div class="interview-block">
+              "k-Wave assigns each voxel its own speed of sound, density, and attenuation
+              coefficient derived from CT Hounsfield units. Following the Aubry 2003 approach,
+              HU is first converted to skull porosity by normalising against the maximum bone
+              value of 1000 HU, and then speed of sound and density are linearly interpolated
+              between cortical bone values — 2900 m/s and 1900 kg/m³ — and water values using
+              that porosity. Attenuation follows a frequency power law with units of dB per
+              MHz-to-the-power-y per centimetre, where the exponent y is set separately.
+              The grid is also surrounded by a Perfectly Matched Layer to prevent wave
+              wrapping at the domain boundaries."
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ══ Layer 3 ══════════════════════════════════════════════════ -->
+      <section id="layer3" class="section layer2-section layer-detail-panel">
+        <div class="layer2-shell">
+
+          <div class="layer2-header l3-header">
+            <div class="layer-badge l3-badge">L3</div>
+            <div>
+              <p class="layer2-eyebrow l3-eyebrow">Layer 3 · Numerical Engine</p>
+              <h2>k-Space Pseudospectral Method</h2>
+            </div>
+          </div>
+
+          <!-- Big idea -->
+          <div class="layer2-block">
+            <div class="table-title">The big idea in one sentence</div>
+            <blockquote class="big-idea-quote">
+              Instead of computing how pressure changes point-by-point using finite differences
+              (slow, inaccurate), k-Wave transforms the entire pressure field into
+              <strong>spatial frequency space (k-space)</strong> via FFT, computes the spatial
+              derivative there as an exact multiplication by ik, then transforms back.
+              This is the pseudospectral method.
+            </blockquote>
+          </div>
+
+          <!-- Walking analogy + comparison table -->
+          <div class="layer2-block">
+            <div class="table-title">Why finite differences fail — the walking analogy</div>
+            <p class="layer2-body">
+              Imagine walking and at each step you mis-estimate your direction by 1 degree.
+              After 10 steps: 10 degrees off. After 300 steps: completely lost. Finite
+              difference makes a small approximation error at every time step. After thousands
+              of time steps the wave appears to travel at the wrong speed — the focal spot
+              drifts. k-Space makes no approximation in the spatial derivative — so no error
+              accumulates.
+            </p>
+            <div class="compare-table-wrap">
+              <table class="compare-table">
+                <thead>
+                  <tr>
+                    <th>Property</th>
+                    <th>Finite difference</th>
+                    <th>k-Space pseudospectral</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>How derivatives computed</td>
+                    <td>Local (2 neighbour points)</td>
+                    <td>Global (FFT of entire field)</td>
+                  </tr>
+                  <tr>
+                    <td>Error accumulation</td>
+                    <td>Yes — phase drift over time</td>
+                    <td>No — dispersion-free*</td>
+                  </tr>
+                  <tr>
+                    <td>Grid points per wavelength</td>
+                    <td>≥10 required</td>
+                    <td>~2–3 sufficient</td>
+                  </tr>
+                  <tr>
+                    <td>Memory for 3D sim</td>
+                    <td>&gt;400 GB (unusable)</td>
+                    <td>Feasible on normal hardware</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="table-footnote">* Exactly dispersion-free for linear, lossless, homogeneous media. See nuance below.</p>
+          </div>
+
+          <!-- FFT explained + 5-step code -->
+          <div class="layer2-block">
+            <div class="table-title">The FFT explained — why spatial derivatives become multiplications</div>
+            <p class="layer2-body">
+              The Fourier Transform answers: <em>"what spatial frequencies are hiding in this
+              pressure pattern?"</em> Instead of "frequency in Hz" applied to time, we get
+              <strong>k = wavenumber in cycles/metre</strong> applied to space. That's where
+              the name k-Wave comes from.
+            </p>
+            <div class="math-display">
+              <p class="math-formula">p(x) → FFT → P(k)</p>
+              <p class="math-caption">Spatial pressure field → k-space representation (spatial frequencies)</p>
+            </div>
+            <p class="layer2-body">
+              In k-space, a spatial derivative becomes a simple multiplication — because the
+              derivative of a sine wave is a cosine, which in complex notation is
+              multiplication by i:
+            </p>
+            <div class="math-display">
+              <p class="math-formula">∂p/∂x → ik · P(k)</p>
+              <p class="math-caption">Exact. No approximation. Works for every grid point simultaneously.</p>
+            </div>
+            <p class="layer2-body">The 5-step process k-Wave uses every time step:</p>
+            <pre class="layer2-pre"><code>% At each time step, k-Wave does this for spatial derivatives:
+% 1. Take FFT of pressure field
+P_k = fft(p_field);
+
+% 2. Multiply by ik (= exact spatial derivative in k-space)
+dP_dx_k = 1i .* k_vec .* kappa .* P_k;
+
+% 3. Inverse FFT → exact derivative at every grid point
+dp_dx = real(ifft(dP_dx_k));
+
+% 4. Update particle velocity (momentum conservation)
+ux = ux - (dt/rho0) .* dp_dx;
+
+% 5. Repeat for all Cartesian directions (y, z)</code></pre>
+          </div>
+
+          <!-- κ operator -->
+          <div class="layer2-block">
+            <div class="table-title">The k-space operator κ — source verified exact formula</div>
+            <div class="math-display">
+              <p class="math-formula">κ = sinc(c<sub>ref</sub> · k · Δt / 2)</p>
+              <p class="math-caption">The k-space operator. Applied as a correction factor to every time step.</p>
+            </div>
+            <div class="nuance-card nc-star">
+              <span class="nuance-label">★ Nuance from source papers — when κ is exact vs approximate</span>
+              <p>
+                The k-space operator κ is <strong>exactly dispersion-free only for linear,
+                lossless, homogeneous media</strong>. When the medium is heterogeneous
+                (like skull + brain), the correction is no longer exact because
+                c<sub>ref</sub> is a single scalar applied globally, but local sound speeds
+                vary. However, it still dramatically reduces numerical dispersion compared to
+                standard finite differences. For skull simulations, c<sub>ref</sub> is
+                typically set to the maximum sound speed in the medium (~2900 m/s for skull).
+                The paper confirms: "for soft biological tissue where medium parameters are
+                weakly heterogeneous, the k-space method remains an apposite numerical
+                technique."
+              </p>
+            </div>
+            <p class="layer2-body">
+              About 60% of k-Wave's total computation time is spent performing forward and
+              inverse FFTs — this is why GPU acceleration
+              (<code>DataCast = 'gpuArray-single'</code>) and the C++ version
+              (<code>kspaceFirstOrder3DC</code>) exist for large 3D simulations.
+            </p>
+          </div>
+
+          <!-- CFL stability -->
+          <div class="layer2-block">
+            <div class="table-title">CFL stability condition — must know for MATLAB</div>
+            <div class="math-display">
+              <p class="math-formula">CFL = c<sub>max</sub> · dt / dx &lt; 0.3</p>
+              <p class="math-caption">Courant–Friedrichs–Lewy condition. k-Wave default CFL = 0.3 using c<sub>max</sub> in the medium.</p>
+            </div>
+            <pre class="layer2-pre"><code>% k-Wave calculates dt automatically based on CFL
+% kgrid.dt = CFL * dx_min / c_max
+
+% Example: skull simulation
+dx     = 0.5e-3;      % 0.5 mm grid spacing
+c_max  = 2900;        % skull speed of sound
+CFL    = 0.3;
+
+dt = CFL * dx / c_max;
+% dt ≈ 52 nanoseconds
+
+% Nyquist rule — at least 2 points per wavelength
+f0      = 500e3;      % 500 kHz
+c_brain = 1560;
+lambda  = c_brain / f0;   % = 3.12 mm
+% dx must be ≤ λ/2 = 1.56 mm
+% We chose 0.5 mm — well within limit ✓
+
+% Set time array manually if needed:
+kgrid.makeTime(medium.sound_speed, CFL, t_end);</code></pre>
+          </div>
+
+          <!-- PPW nuance -->
+          <div class="layer2-block">
+            <div class="nuance-card nc-warn">
+              <span class="nuance-label">⚠ Nuance from source papers — grid points per wavelength</span>
+              <p>
+                The k-space method achieves spectral accuracy approaching the Nyquist limit
+                of 2 PPW, whereas finite differences require ≥10 PPW. The k-Wave manual
+                confirms classical methods need 10+ PPW for "useful accuracy" — making 3D
+                simulations computationally impossible at diagnostic frequencies without the
+                k-space approach. In practice, labs use 3–6 PPW for safety margin, especially
+                with heterogeneous skull media.
+              </p>
+            </div>
+          </div>
+
+          <!-- Pseudospectral meaning -->
+          <div class="layer2-block">
+            <div class="table-title">"Pseudospectral" — what the word actually means</div>
+            <p class="layer2-body">
+              <strong>Spectral</strong> = spatial derivatives computed in frequency/k-space
+              (exact). <strong>Pseudo</strong> = time stepping still done in real space (not
+              fully spectral). k-Wave is a hybrid: spatial operations are spectral and exact,
+              time stepping is real-space with a κ correction that removes numerical
+              dispersion. This is fundamentally different from purely spectral methods.
+            </p>
+          </div>
+
+          <!-- Interview answer -->
+          <div class="layer2-block">
+            <div class="table-title">Interview answer — explain the k-space pseudospectral method</div>
+            <div class="interview-block">
+              "k-Wave uses a pseudospectral method where spatial derivatives are computed by
+              taking the FFT of the pressure field into k-space, multiplying by ik — which is
+              the exact Fourier representation of differentiation — and then
+              inverse-transforming back. This is exact with no numerical approximation, unlike
+              finite differences which accumulate phase error over thousands of time steps.
+              A k-space correction operator κ equal to sinc of c_ref times k times Δt over 2
+              is applied at each time step, which eliminates numerical dispersion for
+              homogeneous media. For heterogeneous media like skull, the correction is
+              approximate but still dramatically better than finite differences. The result is
+              that k-Wave requires only about 2 to 3 grid points per wavelength instead of 10
+              or more, making skull simulations both accurate and computationally feasible."
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ══ Layer 4 ══════════════════════════════════════════════════ -->
+      <section id="layer4" class="section layer2-section layer-detail-panel">
+        <div class="layer2-shell">
+
+          <div class="layer2-header l4-header">
+            <div class="layer-badge l4-badge">L4</div>
+            <div>
+              <p class="layer2-eyebrow l4-eyebrow">Layer 4 · Implementation</p>
+              <h2>MATLAB Simulation Setup</h2>
+            </div>
+          </div>
+          <p class="layer2-body" style="padding:0 32px 0;">The four structs that describe every k-Wave simulation — and the complete code to run Simulation 1 (water) and Simulation 2 (skull layer).</p>
+
+          <!-- 4 structs -->
+          <div class="layer2-block">
+            <div class="table-title">The four objects every k-Wave simulation needs</div>
+            <div class="structs-grid">
+              <div class="struct-card">
+                <div class="struct-icon">📐</div>
+                <div class="struct-name">kgrid</div>
+                <div class="struct-type" style="color:var(--teal)">kWaveGrid object</div>
+                <p>Grid coordinates, voxel spacing, time array, k-space wavenumber matrices. Contains kgrid.kx, kgrid.ky used internally for FFTs.</p>
+                <pre class="prop-code">kgrid = kWaveGrid(Nx, dx, Ny, dy);
+kgrid.makeTime(c_water, 0.3, 60e-6);</pre>
+              </div>
+              <div class="struct-card">
+                <div class="struct-icon">🧱</div>
+                <div class="struct-name">medium</div>
+                <div class="struct-type" style="color:var(--teal)">MATLAB struct</div>
+                <p>Acoustic properties at every voxel. Fields: sound_speed, density, alpha_coeff, alpha_power, BonA. Scalar = uniform. Nx×Ny matrix = per-voxel.</p>
+                <pre class="prop-code">medium.sound_speed = c_water;
+medium.density     = rho_water;</pre>
+              </div>
+              <div class="struct-card">
+                <div class="struct-icon">📡</div>
+                <div class="struct-name">source</div>
+                <div class="struct-type" style="color:var(--gold)">MATLAB struct</div>
+                <p>Transducer location and waveform. source.p_mask = binary Nx×Ny matrix (1 where transducer is). source.p = 1×Nt waveform (or N_elem×Nt for phased array).</p>
+                <pre class="prop-code">source.p_mask = makeArc([Nx,Ny], ...);
+source.p = 1e5 * toneBurst(...);</pre>
+              </div>
+              <div class="struct-card">
+                <div class="struct-icon">🎙️</div>
+                <div class="struct-name">sensor</div>
+                <div class="struct-type" style="color:var(--green)">MATLAB struct</div>
+                <p>Recording locations and quantities. sensor.mask = binary grid. sensor.record = {'p_max','p_rms'}. Passive — never affects simulation physics.</p>
+                <pre class="prop-code">sensor.mask   = ones(Nx, Ny);
+sensor.record = {'p_final'};</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Simulation 1 code -->
+          <div class="layer2-block">
+            <div class="table-title">Simulation 1 — uniform water phantom (tFUS_water.m)</div>
+            <pre class="layer2-pre"><code>%% SECTION 1: PHYSICAL PARAMETERS
+f0        = 500e3;        % transducer centre frequency [Hz]
+c_water   = 1500;         % speed of sound in water [m/s]
+rho_water = 1000;         % density [kg/m³]
+PPW       = 6;            % points per wavelength — safe for heterogeneous later
+lambda    = c_water / f0; % = 3 mm at 500 kHz
+dx = lambda / PPW;        % = 0.5 mm grid spacing
+dy = dx;
+
+%% SECTION 2: KGRID — grid coordinates + time array
+Nx = 128; Ny = 128;
+kgrid = kWaveGrid(Nx, dx, Ny, dy);
+kgrid.makeTime(c_water, 0.3, 60e-6); % CFL=0.3, t_end=60µs
+
+%% SECTION 3: MEDIUM — uniform water (scalar)
+medium.sound_speed = c_water;   % scalar = same everywhere
+medium.density     = rho_water;
+medium.alpha_coeff = 0.002;     % [dB/MHz^y/cm] — water
+medium.alpha_power = 2.0;       % y=2 for water (thermo-viscous)
+
+%% SECTION 4: SOURCE — focused arc transducer
+focus_depth  = 40e-3;   % focal depth = 40 mm
+arc_diam     = 20e-3;   % aperture diameter = 20 mm, F# = 2
+arc_diam_pts = round(arc_diam / dy);
+if mod(arc_diam_pts, 2) == 0; arc_diam_pts = arc_diam_pts + 1; end % must be odd!
+arc_pos   = [Nx/2, 10];
+focus_pos = [Nx/2, 10 + round(focus_depth/dy)];
+source.p_mask = makeArc([Nx,Ny], arc_pos, round(focus_depth/dx), arc_diam_pts, focus_pos);
+source.p      = 1e5 * toneBurst(1/kgrid.dt, f0, 5); % 5-cycle tone burst @ 0.1 MPa
+
+%% SECTION 5: SENSOR — full grid snapshot
+sensor.mask   = ones(Nx, Ny);
+sensor.record = {'p_final'};
+
+%% SECTION 6: RUN
+input_args = {'PMLSize', 20, 'PMLInside', false, 'PlotSim', true, 'DataCast', 'single'};
+sensor_data = kspaceFirstOrder2D(kgrid, medium, source, sensor, input_args{:});
+
+%% SECTION 7: VISUALISE
+p_final_map = reshape(sensor_data.p_final, Nx, Ny);
+figure; imagesc(kgrid.y_vec*1e3, kgrid.x_vec*1e3, p_final_map/1e3);
+xlabel('Lateral [mm]'); ylabel('Axial [mm]'); colormap(getColorMap); axis image;</code></pre>
+          </div>
+
+          <!-- Simulation 2 code -->
+          <div class="layer2-block">
+            <div class="table-title">Simulation 2 — full tissue stack with skull layer (tFUS_skull.m)</div>
+            <pre class="layer2-pre"><code>%% HETEROGENEOUS MEDIUM — full tissue stack
+% Step 1: fill everything with water (background)
+medium.sound_speed = 1500  * ones(Nx, Ny);
+medium.density     = 1000  * ones(Nx, Ny);
+medium.alpha_coeff = 0.002 * ones(Nx, Ny);
+medium.alpha_power = 1.1;  % scalar — same power law for all tissues
+
+% Step 2: overwrite tissue layers column by column
+medium.sound_speed(:, 26:31) = 1580; medium.density(:, 26:31) = 1090; medium.alpha_coeff(:, 26:31) = 0.5;  % scalp
+medium.sound_speed(:, 32:37) = 2900; medium.density(:, 32:37) = 1900; medium.alpha_coeff(:, 32:37) = 11;   % skull outer cortical
+medium.sound_speed(:, 38:42) = 1800; medium.density(:, 38:42) = 1300; medium.alpha_coeff(:, 38:42) = 5;    % skull diploë
+medium.sound_speed(:, 43:48) = 2900; medium.density(:, 43:48) = 1900; medium.alpha_coeff(:, 43:48) = 11;   % skull inner cortical
+% CSF (cols 49-52) = water, no change needed
+medium.sound_speed(:, 53:108) = 1560; medium.density(:, 53:108) = 1040; medium.alpha_coeff(:, 53:108) = 0.6; % brain grey matter
+
+% Step 3: CRITICAL — set reference speed to max for CFL stability
+medium.sound_speed_ref = max(medium.sound_speed(:)); % = 2900 m/s (skull)
+kgrid.makeTime(medium.sound_speed_ref, 0.3, 80e-6);  % re-run with c_max
+
+%% SENSOR — sparse line for p_max
+sensor.mask = zeros(Nx, Ny);
+sensor.mask(Nx/2, :) = 1;           % one row through focal plane
+sensor.record = {'p_max', 'p_min', 'p_rms'};
+
+%% SAFETY METRICS from sensor_data
+% ISPPA [W/cm²] = p_max² / (2 × ρ × c) × 1e-4
+% MI            = |p_min [MPa]| / sqrt(f0 [MHz])
+% ISPTA         = ISPPA × duty_cycle</code></pre>
+          </div>
+
+          <!-- Inside solver flow -->
+          <div class="layer2-block">
+            <div class="table-title">Inside kspaceFirstOrder2D — one time step (~600 iterations total)</div>
+            <div class="solver-flow">
+              <div class="flow-step" style="--fc:var(--coral)"><span>Inject<br>source.p(t)</span></div>
+              <span class="flow-arrow">→</span>
+              <div class="flow-step" style="--fc:var(--plum)"><span>FFT p(x)<br>→ P(k)</span></div>
+              <span class="flow-arrow">→</span>
+              <div class="flow-step" style="--fc:var(--teal)"><span>×ik → IFFT<br>update u</span></div>
+              <span class="flow-arrow">→</span>
+              <div class="flow-step" style="--fc:var(--gold)"><span>update ρ<br>from ∇·u</span></div>
+              <span class="flow-arrow">→</span>
+              <div class="flow-step" style="--fc:var(--coral)"><span>p = c²ρ<br>per voxel</span></div>
+              <span class="flow-arrow">→</span>
+              <div class="flow-step" style="--fc:var(--plum)"><span>PML<br>damp</span></div>
+              <span class="flow-arrow">→</span>
+              <div class="flow-step" style="--fc:var(--green)"><span>Record<br>sensor_data</span></div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ══ Layer 5 ══════════════════════════════════════════════════ -->
+      <section id="layer5" class="section layer2-section layer-detail-panel">
+        <div class="layer2-shell">
+
+          <div class="layer2-header l5-header">
+            <div class="layer-badge l5-badge">L5</div>
+            <div>
+              <p class="layer2-eyebrow l5-eyebrow">Layer 5 · Targeting</p>
+              <h2>Targeting, Aberration &amp; Phase Correction</h2>
+            </div>
+          </div>
+          <p class="layer2-body" style="padding:0 32px 0;">How anatomical coordinates become simulation grid indices, why the skull deflects the focus, and the time-reversal method that snaps it back to the target.</p>
+
+          <!-- Coordinate conversion -->
+          <div class="layer2-block">
+            <div class="table-title">Converting real-world coordinates to grid indices</div>
+            <div class="math-display">
+              <p class="math-formula">grid_index = round(physical_mm / dx_mm) + offset</p>
+              <p class="math-caption">BabelBrain does this automatically from MNI coordinates. Raw k-Wave: target 40 mm deep, transducer at col 10 → col = 10 + round(40/0.5) = 90</p>
+            </div>
+            <div class="two-info-grid">
+              <div class="info-col">
+                <div class="info-col-title">arc_pos — transducer centre</div>
+                <div class="info-col-val" style="color:var(--plum)">[row, col] grid index</div>
+                <p>Geometric centre of the transducer arc on the grid. In real lab: scalp entry point from BabelBrain / K-Plan divided by dx. Stays fixed throughout correction — you never move the transducer to fix aberration.</p>
+              </div>
+              <div class="info-col">
+                <div class="info-col-title">focus_pos — geometric target</div>
+                <div class="info-col-val" style="color:var(--coral)">[row, col] grid index</div>
+                <p>Tells makeArc how to curve the arc — the centre of curvature. In real lab: thalamus centroid from 3D Slicer → MNI mm → grid index via affine transform. Skull aberration overrides this during propagation.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Time reversal pipeline -->
+          <div class="layer2-block">
+            <div class="table-title">Time-reversal correction pipeline</div>
+            <div class="layer-pipeline">
+              <div class="lpipe-step">
+                <div class="lpipe-n" style="background:rgba(215,95,79,0.12);color:var(--coral)">1</div>
+                <div class="lpipe-content">
+                  <div class="lpipe-title">Forward simulation — observe aberrated focus</div>
+                  <p>Run Simulation 2. Find where p_max is highest — that is where the skull moved the focus. Compare to focus_pos to measure the shift.</p>
+                  <pre class="prop-code">[~,idx] = max(sensor_data.p_max(:)); [row_f, col_f] = ind2sub([Nx Ny], idx);</pre>
+                </div>
+              </div>
+              <div class="lpipe-step">
+                <div class="lpipe-n" style="background:rgba(93,75,118,0.12);color:var(--plum)">2</div>
+                <div class="lpipe-content">
+                  <div class="lpipe-title">Time-reversal — place point source at TRUE target</div>
+                  <p>Swap source and sensor. Point source at focus_pos (thalamus), sensor at transducer positions. Wave travels backward through skull.</p>
+                  <pre class="prop-code">source_TR.p_mask(focus_pos(1), focus_pos(2)) = 1;   sensor_TR.mask = source.p_mask;</pre>
+                </div>
+              </div>
+              <div class="lpipe-step">
+                <div class="lpipe-n" style="background:rgba(15,124,128,0.12);color:var(--teal)">3</div>
+                <div class="lpipe-content">
+                  <div class="lpipe-title">Phase conjugation — flip the received signal in time</div>
+                  <p>The time-reverse of what arrived at the transducer, when re-emitted, retraces exactly back to the target through the skull.</p>
+                  <pre class="prop-code">corrected_drive = fliplr(data_TR.p);  % or: -angle(fft(...)) in frequency domain</pre>
+                </div>
+              </div>
+              <div class="lpipe-step">
+                <div class="lpipe-n" style="background:rgba(46,139,98,0.12);color:var(--green)">4</div>
+                <div class="lpipe-content">
+                  <div class="lpipe-title">Corrected forward — only source.p changes</div>
+                  <p>Same arc_pos. Same focus_pos. Same medium. Same grid. Only source.p carries corrected per-element phases. Focus snaps to target.</p>
+                  <pre class="prop-code">source.p = corrected_drive;  % N_elements × Nt matrix with phase corrections</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Focus troubleshooting accordion -->
+          <div class="layer2-block">
+            <div class="table-title">What to change when the focus misbehaves</div>
+            <div class="layer-accordion">
+              <div class="lacc-item">
+                <button class="lacc-head" onclick="toggleLayerAcc(this)">Focus is at wrong location (axial/lateral shift)<span class="lacc-arrow">▼</span></button>
+                <div class="lacc-body">→ <strong>Change source.p</strong> — apply per-element phase delays via time-reversal. Do NOT move arc_pos. Moving the transducer shifts the geometric aim crudely without correcting per-element phase errors — the focus stays blurred even if it moves closer to target.</div>
+              </div>
+              <div class="lacc-item">
+                <button class="lacc-head" onclick="toggleLayerAcc(this)">Focus is at right location but FWHM is too large<span class="lacc-arrow">▼</span></button>
+                <div class="lacc-body">→ <strong>Change source.p amplitudes</strong> — apply apodisation (weight outer elements less) plus phase correction. Large FWHM means partial destructive interference at focus due to unequal skull thickness across aperture.</div>
+              </div>
+              <div class="lacc-item">
+                <button class="lacc-head" onclick="toggleLayerAcc(this)">Peak pressure at target is too low<span class="lacc-arrow">▼</span></button>
+                <div class="lacc-body">→ <strong>Scale up source.p amplitude</strong> (check safety limits first). Or consider moving arc_pos to a thinner skull region (temporal window). This is the ONE case where transducer repositioning is justified — not for phase correction but for acoustic window quality.</div>
+              </div>
+              <div class="lacc-item">
+                <button class="lacc-head" onclick="toggleLayerAcc(this)">Beam blocked by dense bone entirely<span class="lacc-arrow">▼</span></button>
+                <div class="lacc-body">→ <strong>Change arc_pos</strong> to a different scalp entry point (e.g. temporal vs vertex window). BabelBrain/K-Plan help identify the optimal entry point by simulating multiple positions.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FWHM measurement -->
+          <div class="layer2-block">
+            <div class="nuance-card nc-star" style="margin-top:0;">
+              <span class="nuance-label">★ FWHM measurement from sensor_data</span>
+              <p>FWHM = Full Width at Half Maximum — the width of the pressure profile where it drops to 50% of peak. Quantifies focal spot size. Typical tFUS values: lateral FWHM 3–8 mm, axial FWHM 10–30 mm.</p>
+              <pre class="prop-code">p_axial  = sensor_data.p_max(Nx/2, :);
+half_max = max(p_axial) / 2;
+above    = find(p_axial >= half_max);
+FWHM_mm  = (above(end) - above(1)) * dy * 1000;</pre>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ══ Layer 6 ══════════════════════════════════════════════════ -->
+      <section id="layer6" class="section layer2-section layer-detail-panel">
+        <div class="layer2-shell">
+
+          <div class="layer2-header l6-header">
+            <div class="layer-badge l6-badge">L6</div>
+            <div>
+              <p class="layer2-eyebrow l6-eyebrow">Layer 6 · Advanced</p>
+              <h2>Advanced Simulation Decisions</h2>
+            </div>
+          </div>
+          <p class="layer2-body" style="padding:0 32px 0;">FFT grid efficiency, transducer element modelling, sensor strategies, and acoustic property sourcing — the decisions that separate a teaching simulation from a professional pipeline.</p>
+
+          <!-- FFT grid sizes -->
+          <div class="layer2-block">
+            <div class="table-title">FFT-efficient grid sizes — choose Nx, Ny, Nz from this list</div>
+            <div class="impedance-table-wrap">
+              <table class="impedance-table">
+                <thead><tr><th>N</th><th>Factorisation</th><th>Speed</th><th>Use case</th></tr></thead>
+                <tbody>
+                  <tr class="fft-good"><td>128</td><td>2⁷</td><td class="sv-teal">★★★</td><td>2D teaching simulations (Simulation 1 &amp; 2)</td></tr>
+                  <tr class="fft-good"><td>192</td><td>2⁶ × 3</td><td class="sv-teal">★★★</td><td>When you need slightly more domain than 128</td></tr>
+                  <tr class="fft-good"><td>256</td><td>2⁸</td><td class="sv-teal">★★★</td><td>Standard 3D tFUS simulation grid</td></tr>
+                  <tr class="fft-good"><td>320</td><td>2⁶ × 5</td><td class="sv-teal">★★★</td><td>Larger domain, still efficient</td></tr>
+                  <tr class="fft-good"><td>512</td><td>2⁹</td><td class="sv-teal">★★★</td><td>High-resolution 3D — needs GPU</td></tr>
+                  <tr><td>300</td><td>2² × 3 × 5²</td><td>★★☆</td><td>Acceptable fallback</td></tr>
+                  <tr class="fft-bad"><td>127</td><td>prime</td><td class="reflect-high">★☆☆</td><td>NEVER USE — maximally slow</td></tr>
+                  <tr class="fft-bad"><td>253</td><td>11 × 23</td><td class="reflect-high">★☆☆</td><td>NEVER USE — large prime factors</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <pre class="layer2-pre"><code>%% Compute minimum N from physics, then snap to FFT-friendly size
+PML_size = 10;  % 10 pts each side in 3D
+N_min_x  = ceil(axial_mm   / (dx*1000)) + 2*PML_size;
+N_min_y  = ceil(lateral_mm / (dx*1000)) + 2*PML_size;
+Nx = roundUpToFFTSize(N_min_x);  % k-Wave helper
+Ny = roundUpToFFTSize(N_min_y);  % much faster than 2^nextpow2</code></pre>
+          </div>
+
+          <!-- Transducer types -->
+          <div class="layer2-block">
+            <div class="table-title">Transducer source types</div>
+            <div class="layer-accordion">
+              <div class="lacc-item">
+                <button class="lacc-head" onclick="toggleLayerAcc(this)">Single element bowl — makeArc / makeBowl<span class="lacc-arrow">▼</span></button>
+                <div class="lacc-body">source.p_mask = output of <code>makeArc</code> (2D) or <code>makeBowl</code> (3D). source.p = 1×Nt. One waveform drives all mask points equally. Used with single-channel signal generators (Sonic Concepts H317). Natural focus determined by radius of curvature.</div>
+              </div>
+              <div class="lacc-item">
+                <button class="lacc-head" onclick="toggleLayerAcc(this)">Multi-element phased array — load manufacturer geometry file<span class="lacc-arrow">▼</span></button>
+                <div class="lacc-body">Load element position file (N_elem × 3 matrix of [x,y,z] mm). Convert each to grid index: <code>ix = round(pos_mm(n,1)/dx/1000) + Nx/2</code>. Set that point in source.p_mask = 1. source.p becomes N_elem × Nt — each row a phase-corrected tone burst. Enables steering and skull correction.</div>
+              </div>
+              <div class="lacc-item">
+                <button class="lacc-head" onclick="toggleLayerAcc(this)">Off-grid sources — Wise et al. 2019<span class="lacc-arrow">▼</span></button>
+                <div class="lacc-body">Single grid-point sources radiate isotropically — incorrect for finite-area elements. Off-grid sources use sinc-weighted spreading across neighbouring grid points, correctly representing a bandlimited source on a coarse grid. source.p_mask becomes a weighted float matrix (not just 0s/1s). BabelBrain implements this automatically.</div>
+              </div>
+              <div class="lacc-item">
+                <button class="lacc-head" onclick="toggleLayerAcc(this)">Sensor strategies — which to use when<span class="lacc-arrow">▼</span></button>
+                <div class="lacc-body">
+                  <strong>Single point</strong> at target: <code>sensor.mask(tx,ty) = 1</code> — full time series, minimal memory. For waveform analysis.<br><br>
+                  <strong>Line through focus</strong>: <code>sensor.mask(Nx/2, :) = 1</code> — axial pressure profile for FWHM measurement.<br><br>
+                  <strong>Volume ROI box</strong>: ±10 mm around target, record p_max/p_min/p_rms — for 3D focal maps and safety metrics.<br><br>
+                  <strong>Full grid</strong>: ones(Nx,Ny) — 2D only. In 3D: 256³ p_max map = 67 MB acceptable, full time series = ~25 GB — never in 3D.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Safety metrics -->
+          <div class="layer2-block">
+            <div class="table-title">Safety metrics from sensor_data</div>
+            <div class="math-display"><p class="math-formula">ISPPA [W/cm²] = p_max² / (2 · ρ · c) × 10⁻⁴</p><p class="math-caption">Spatial peak pulse average intensity — peak pressure at focus converted to intensity</p></div>
+            <div class="math-display" style="margin-top:10px;"><p class="math-formula">MI = |p_min [MPa]| / √f₀ [MHz]</p><p class="math-caption">Mechanical index — FDA limit: MI &lt; 1.9 (cavitation safety metric)</p></div>
+            <div class="math-display" style="margin-top:10px;"><p class="math-formula">ISPTA [mW/cm²] = ISPPA × duty_cycle</p><p class="math-caption">Spatial peak temporal average intensity — FDA limit: &lt; 720 mW/cm² (thermal safety metric)</p></div>
+          </div>
+
+        </div>
+      </section>
+
+      <section id="level3-3d" class="section level3-link-section">
+        <div class="level3-card">
+          <div>
+            <p class="eyebrow">Clickable lab page</p>
+            <h2>Level 3: First 3D Simulation</h2>
+            <p>
+              Move from 2D intuition to a first 3D k-Wave simulation in water.
+              This page covers the extra grid axis, `makeBowl`, slice sensors,
+              running options, visualisation, and annotated MATLAB code.
+            </p>
+          </div>
+          <a class="button primary" href="level3_3d_simulation.html">Open 3D simulation page</a>
+        </div>
+        <div class="level-sequence-grid">
+          <a class="level-sequence-card" href="level4_3d_skull.html">
+            <span>Level 4</span>
+            <strong>3D Simulation with Skull</strong>
+            <p>Add skull geometry, heterogeneous acoustic maps, and skull-related beam distortion.</p>
+          </a>
+          <a class="level-sequence-card" href="level5_clinical_pipeline.html">
+            <span>Level 5</span>
+            <strong>Clinical Pipeline</strong>
+            <p>Connect image data, acoustic property maps, source modelling, safety metrics, and outputs.</p>
+          </a>
+        </div>
+      </section>
+
+      <!-- ══ 05 · Safety Parameters ════════════════════════════════════ -->
+      <section id="safety" class="section layer2-section">
+        <div class="section-num-heading">
+          <span class="section-num">05</span>
+          <h2>Safety Parameters — Know Cold</h2>
+        </div>
+
+        <div class="layer2-shell">
+
+          <!-- Parameters table -->
+          <div class="layer2-block" style="padding:0; overflow:hidden;">
+            <table class="safety-table">
+              <thead>
+                <tr>
+                  <th>Parameter</th>
+                  <th>Full name</th>
+                  <th>Typical tFUS value</th>
+                  <th>FDA limit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Frequency (f<sub>0</sub>)</strong></td>
+                  <td>Fundamental frequency</td>
+                  <td class="sv-teal">250 kHz – 1 MHz</td>
+                  <td class="sv-muted">—</td>
+                </tr>
+                <tr>
+                  <td><strong>ISPTA</strong></td>
+                  <td>Spatial peak temporal average intensity</td>
+                  <td class="sv-teal">&lt;720 mW/cm²</td>
+                  <td>720 mW/cm²</td>
+                </tr>
+                <tr>
+                  <td><strong>ISPPA</strong></td>
+                  <td>Spatial peak pulse average intensity</td>
+                  <td class="sv-teal">Varies</td>
+                  <td>190 W/cm²</td>
+                </tr>
+                <tr>
+                  <td><strong>MI</strong></td>
+                  <td>Mechanical index</td>
+                  <td class="sv-teal">&lt;1.9</td>
+                  <td>1.9</td>
+                </tr>
+                <tr>
+                  <td><strong>TI</strong></td>
+                  <td>Thermal index</td>
+                  <td class="sv-teal">&lt;6</td>
+                  <td>6</td>
+                </tr>
+                <tr>
+                  <td><strong>Duty cycle</strong></td>
+                  <td>ON-time / total period</td>
+                  <td class="sv-teal">0.5–50%</td>
+                  <td class="sv-muted">—</td>
+                </tr>
+                <tr>
+                  <td><strong>PRF</strong></td>
+                  <td>Pulse repetition frequency</td>
+                  <td class="sv-teal">100–1000 Hz</td>
+                  <td class="sv-muted">—</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- ISPTA vs ISPPA callout -->
+          <div class="layer2-block">
+            <div class="nuance-card nc-warn" style="margin-top:0;">
+              <p>
+                <strong>ISPTA vs ISPPA:</strong> ISPTA averages intensity over the full pulse
+                repetition period (including OFF time). ISPPA averages over just the ON pulse.
+                ISPTA is always ≤ ISPPA × duty cycle. Interviewers often ask you to distinguish
+                these — ISPTA is the thermal safety metric; MI is the cavitation safety metric.
+              </p>
+            </div>
+          </div>
+
+          <!-- Intensity formula -->
+          <div class="layer2-block">
+            <div class="math-display math-code">
+              <p class="math-formula-mono">I = p_rms² / (2 · ρ · c) → convert to mW/cm² by dividing by 10⁴</p>
+              <p class="math-caption">Computing ISPTA from k-Wave <code style="font-size:0.85em;background:rgba(15,124,128,0.12);color:var(--teal);padding:1px 5px;border-radius:3px;">sensor_data.p_rms</code> output</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <section id="studio" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Interactive studio</p>
+          <h2>Touch the parameters before running MATLAB</h2>
+        </div>
+
+        <div class="studio-grid">
+          <article class="studio-panel wide">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Layer 2 playground</p>
+                <h3>Heterogeneous medium explorer</h3>
+              </div>
+              <p>Move across tissue layers, switch property maps, and watch impedance mismatch create reflections.</p>
+            </div>
+            <canvas id="mediumCanvas" width="900" height="390"></canvas>
+            <div class="info-grid">
+              <div><span>Sound speed</span><strong id="ic-c">hover map</strong></div>
+              <div><span>Density</span><strong id="ic-rho">hover map</strong></div>
+              <div><span>Impedance</span><strong id="ic-Z">hover map</strong></div>
+              <div><span>Attenuation</span><strong id="ic-alpha">hover map</strong></div>
+            </div>
+            <div class="map-buttons" aria-label="Property map controls">
+              <button class="active" data-map="c">Sound speed</button>
+              <button data-map="rho">Density</button>
+              <button data-map="alpha">Attenuation</button>
+              <button data-map="Z">Impedance</button>
+              <button data-map="HU">CT HU</button>
+            </div>
+            <div class="controls">
+              <label>
+                <span>Skull thickness <output id="out-thick">8 mm</output></span>
+                <input type="range" id="sl-thick" min="4" max="14" step="1" value="8" />
+              </label>
+              <label>
+                <span>Skull density <output id="out-dens">normal</output></span>
+                <input type="range" id="sl-dens" min="0.5" max="1.5" step="0.1" value="1.0" />
+              </label>
+            </div>
+          </article>
+
+          <article class="studio-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Layer 3 playground</p>
+                <h3>k-space resolution lab</h3>
+              </div>
+              <p>Connect frequency, points per wavelength, and CFL to the grid and time step choices.</p>
+            </div>
+            <canvas id="kspaceCanvas" width="620" height="330"></canvas>
+            <div class="controls">
+              <label>
+                <span>Frequency <output id="out-f0">500 kHz</output></span>
+                <input id="ks-frequency" type="range" min="200" max="1000" step="50" value="500" />
+              </label>
+              <label>
+                <span>Points per wavelength <output id="out-ppw">6</output></span>
+                <input id="ks-ppw" type="range" min="3" max="12" step="1" value="6" />
+              </label>
+              <label>
+                <span>CFL <output id="out-cfl">0.30</output></span>
+                <input id="ks-cfl" type="range" min="0.1" max="0.6" step="0.05" value="0.3" />
+              </label>
+            </div>
+            <div class="calc-grid">
+              <div><span>Wavelength</span><strong id="calc-lambda">3.00 mm</strong></div>
+              <div><span>dx target</span><strong id="calc-dx">0.50 mm</strong></div>
+              <div><span>dt target</span><strong id="calc-dt">0.10 us</strong></div>
+            </div>
+          </article>
+
+          <article class="studio-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Layer 4 playground</p>
+                <h3>Phase correction sketch</h3>
+              </div>
+              <p>See why transcranial focusing needs element-wise timing when the skull delays the wavefront.</p>
+            </div>
+            <canvas id="phaseCanvas" width="620" height="330"></canvas>
+            <div class="controls">
+              <label>
+                <span>Skull delay spread <output id="out-delay">45 us</output></span>
+                <input id="phase-delay" type="range" min="0" max="90" value="45" />
+              </label>
+              <label>
+                <span>Array elements <output id="out-elements">16</output></span>
+                <input id="phase-elements" type="range" min="8" max="32" step="2" value="16" />
+              </label>
+            </div>
+            <div class="calc-grid">
+              <div><span>Uncorrected focus</span><strong id="calc-uncorrected">blurred</strong></div>
+              <div><span>Corrected focus</span><strong id="calc-corrected">sharp</strong></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="layers" class="section guide-section">
+        <div class="section-heading">
+          <p class="eyebrow">Full guide</p>
+          <h2>Seven layers from foundation to advanced use</h2>
+        </div>
+        <div class="layer-stack">
+          <article>
+            <span>01</span>
+            <h3>Acoustic Wave Physics</h3>
+            <p>
+              k-Wave models pressure waves through first-order acoustic equations:
+              conservation of momentum, conservation of mass, and the pressure-density relation.
+              Students should be able to explain pressure, particle velocity, density, and sound speed
+              before touching code.
+            </p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Heterogeneous Medium</h3>
+            <p>
+              Real tissue is voxel-wise. `medium.sound_speed`, `medium.density`,
+              `medium.alpha_coeff`, and `medium.alpha_power` may be scalars or maps.
+              Impedance `Z = rho c` explains reflection at water-skull and skull-brain boundaries.
+            </p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>k-Space Pseudospectral Method</h3>
+            <p>
+              Spatial derivatives are computed with FFT-based spectral accuracy, while the
+              k-space correction improves time stepping for propagating waves. This is why grid
+              spacing, points per wavelength, and CFL matter.
+            </p>
+          </article>
+          <article>
+            <span>04</span>
+            <h3>MATLAB Simulation Setup</h3>
+            <p>
+              The core mental model is four structs: `kgrid` defines space and time,
+              `medium` defines tissue, `source` launches energy, and `sensor` records what happened.
+            </p>
+          </article>
+          <article>
+            <span>05</span>
+            <h3>Targeting and Aberration</h3>
+            <p>
+              The skull delays, reflects, and attenuates the wave. Time reversal and phase
+              conjugation convert those delays into source corrections for focused ultrasound.
+            </p>
+          </article>
+          <article>
+            <span>06</span>
+            <h3>Advanced Simulation Decisions</h3>
+            <p>
+              Move from examples to research by choosing PML size, grid resolution, absorption law,
+              GPU or C++ acceleration, sensor outputs, and validation tests deliberately.
+            </p>
+          </article>
+          <article>
+            <span>07</span>
+            <h3>From Patient Images to k-Wave</h3>
+            <p>
+              A lab pipeline often starts with CT or MRI, segmentation, HU-to-acoustic conversion,
+              registration, source placement, simulation, and reporting of pressure, intensity, and focus metrics.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="code" class="section code-section">
+        <div class="section-heading">
+          <p class="eyebrow">Code literacy</p>
+          <h2>The four objects students must master</h2>
+        </div>
+        <div class="object-grid">
+          <article>
+            <h3>kgrid</h3>
+            <p>Physical grid size, spatial step, time array, and CFL-limited temporal sampling.</p>
+            <pre><code>kgrid = kWaveGrid(Nx, dx, Ny, dy);
+kgrid.makeTime(medium.sound_speed);</code></pre>
+          </article>
+          <article>
+            <h3>medium</h3>
+            <p>Sound speed, density, attenuation, nonlinearity, and tissue maps.</p>
+            <pre><code>medium.sound_speed = c_map;
+medium.density = rho_map;
+medium.alpha_coeff = alpha_map;</code></pre>
+          </article>
+          <article>
+            <h3>source</h3>
+            <p>Initial pressure, time-varying pressure, transducer mask, phase, and amplitude.</p>
+            <pre><code>source.p_mask = transducer_mask;
+source.p = toneBurst(1/kgrid.dt, f0, cycles);</code></pre>
+          </article>
+          <article>
+            <h3>sensor</h3>
+            <p>Where data is recorded: points, lines, planes, masks, or whole pressure fields.</p>
+            <pre><code>sensor.mask = detector_mask;
+sensor.record = {'p', 'p_max', 'I_avg'};</code></pre>
+          </article>
+        </div>
+      </section>
+
+      <section id="lab" class="section lab-section">
+        <div class="section-heading">
+          <p class="eyebrow">Lab translation</p>
+          <h2>Use this as a research training ladder</h2>
+        </div>
+        <div class="lab-grid">
+          <article>
+            <h3>Beginner lab</h3>
+            <p>Pulse in water, arrival time, simple sensor line, and analytical speed check.</p>
+          </article>
+          <article>
+            <h3>Intermediate lab</h3>
+            <p>Two-layer medium, impedance reflection, attenuation sweep, and resolution study.</p>
+          </article>
+          <article>
+            <h3>Advanced lab</h3>
+            <p>Skull-like layer, phase correction, focus metric, and dose-related reporting.</p>
+          </article>
+          <article>
+            <h3>Research habit</h3>
+            <p>Save parameter files, software version, random seeds, grid spacing, PML settings, and validation plots.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="resources" class="section resources">
+        <div class="section-heading">
+          <p class="eyebrow">Trusted references</p>
+          <h2>Keep the official sources and your full guides close</h2>
+        </div>
+        <div class="resource-grid">
+          <a href="https://www.k-wave.org/" target="_blank" rel="noreferrer">
+            <strong>Official k-Wave site</strong>
+            <span>Downloads, toolbox overview, documentation, and release information.</span>
+          </a>
+          <a href="https://www.k-wave.org/documentation.php" target="_blank" rel="noreferrer">
+            <strong>Documentation and examples</strong>
+            <span>Official MATLAB examples and manual entry points.</span>
+          </a>
+          <a href="https://k-wave-python.readthedocs.io/" target="_blank" rel="noreferrer">
+            <strong>k-Wave Python docs</strong>
+            <span>Python-oriented documentation for researchers exploring that interface.</span>
+          </a>
+          <a href="https://www.k-wave.org/license.php" target="_blank" rel="noreferrer">
+            <strong>Citation and license</strong>
+            <span>Use official citation guidance when sharing academic work.</span>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Created by Hira Musarrat. Built from the k-Wave study guide, master guide, and heterogeneous-medium playground.
+      </p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
