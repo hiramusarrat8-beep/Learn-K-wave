@@ -231,15 +231,15 @@ body{background:radial-gradient(circle at 90% 10%,rgba(80,225,186,0.08),transpar
 
 <!-- PROGRESS -->
 <div class="progress-track">
-  <div class="progress-step done"><div class="step-dot">✓</div><span>2D water</span></div>
+  <div class="progress-step done" onclick="location.href='index.html#layer1'" style="cursor:pointer"><div class="step-dot">✓</div><span>2D water</span></div>
   <div class="step-connector"></div>
-  <div class="progress-step done"><div class="step-dot">✓</div><span>Skull layer</span></div>
+  <div class="progress-step done" onclick="location.href='index.html#layer2'" style="cursor:pointer"><div class="step-dot">✓</div><span>Skull layer</span></div>
   <div class="step-connector"></div>
-  <div class="progress-step done"><div class="step-dot">✓</div><span>First 3D sim</span></div>
+  <div class="progress-step done" onclick="location.href='level3_3d_simulation.html'" style="cursor:pointer"><div class="step-dot">✓</div><span>First 3D sim</span></div>
   <div class="step-connector"></div>
   <div class="progress-step active"><div class="step-dot">4</div><span>3D + skull</span></div>
   <div class="step-connector"></div>
-  <div class="progress-step"><div class="step-dot">5</div><span>Clinical pipeline</span></div>
+  <div class="progress-step" onclick="location.href='level5_clinical_pipeline.html'" style="cursor:pointer"><div class="step-dot">5</div><span>Clinical pipeline</span></div>
 </div>
 
 <!-- LAYOUT -->
@@ -249,23 +249,23 @@ body{background:radial-gradient(circle at 90% 10%,rgba(80,225,186,0.08),transpar
 <nav class="sidebar">
   <div class="sidebar-section">
     <div class="sidebar-label">On this page</div>
-    <div class="sidebar-item active" onclick="goTo('intro')"><div class="si-icon">🎯</div>What's new at Level 4</div>
-    <div class="sidebar-item" onclick="goTo('pipeline')"><div class="si-icon">🔗</div>CT → k-Wave pipeline</div>
-    <div class="sidebar-item" onclick="goTo('tissue')"><div class="si-icon">🦴</div>Tissue reference values</div>
-    <div class="sidebar-item" onclick="goTo('hu')"><div class="si-icon">📐</div>HU → acoustic conversion</div>
-    <div class="sidebar-item" onclick="goTo('medium')"><div class="si-icon">🧱</div>Building the 3D medium</div>
-    <div class="sidebar-item" onclick="goTo('stability')"><div class="si-icon">⚖️</div>checkStability + CFL</div>
-    <div class="sidebar-item" onclick="goTo('source')"><div class="si-icon">🔊</div>Source (unchanged)</div>
-    <div class="sidebar-item" onclick="goTo('run')"><div class="si-icon">▶️</div>Running + safety metrics</div>
-    <div class="sidebar-item" onclick="goTo('fullcode')"><div class="si-icon">📄</div>Full annotated script</div>
-    <div class="sidebar-item" onclick="goTo('quiz')"><div class="si-icon">🧠</div>Check yourself</div>
+    <div class="sidebar-item active" onclick="goTo('intro')"><div class="si-icon">—</div>Overview</div>
+    <div class="sidebar-item" onclick="goTo('pipeline')"><div class="si-icon">—</div>CT → k-Wave pipeline</div>
+    <div class="sidebar-item" onclick="goTo('tissue')"><div class="si-icon">—</div>Tissue reference values</div>
+    <div class="sidebar-item" onclick="goTo('hu')"><div class="si-icon">—</div>HU → acoustic conversion</div>
+    <div class="sidebar-item" onclick="goTo('medium')"><div class="si-icon">—</div>Building the 3D medium</div>
+    <div class="sidebar-item" onclick="goTo('stability')"><div class="si-icon">—</div>checkStability + CFL</div>
+    <div class="sidebar-item" onclick="goTo('source')"><div class="si-icon">—</div>Source (unchanged)</div>
+    <div class="sidebar-item" onclick="goTo('run')"><div class="si-icon">—</div>Running + safety metrics</div>
+    <div class="sidebar-item" onclick="goTo('fullcode')"><div class="si-icon">—</div>Full annotated script</div>
+    <div class="sidebar-item" onclick="goTo('quiz')"><div class="si-icon">—</div>Check yourself</div>
   </div>
   <div class="sidebar-section" style="margin-top:16px;">
-    <div class="sidebar-label">Real-world connection</div>
-    <div class="sidebar-item"><div class="si-icon">🔬</div>BRIC uses this</div>
-    <div class="sidebar-item"><div class="si-icon">🧠</div>PRESTUS wraps this</div>
-    <div class="sidebar-item"><div class="si-icon">⬅</div>Level 3: 3D water</div>
-    <div class="sidebar-item"><div class="si-icon">➡</div>Level 5: clinical pipeline</div>
+    <div class="sidebar-label">See also</div>
+    <div class="sidebar-item" onclick="location.href='level5_clinical_pipeline.html'" style="cursor:pointer"><div class="si-icon">—</div>BRIC pipeline</div>
+    <div class="sidebar-item" onclick="location.href='level5_clinical_pipeline.html'" style="cursor:pointer"><div class="si-icon">—</div>PRESTUS</div>
+    <div class="sidebar-item" onclick="location.href='level3_3d_simulation.html'" style="cursor:pointer"><div class="si-icon">←</div>Level 3: 3D water</div>
+    <div class="sidebar-item" onclick="location.href='level5_clinical_pipeline.html'" style="cursor:pointer"><div class="si-icon">→</div>Level 5: clinical pipeline</div>
   </div>
 </nav>
 
@@ -274,41 +274,35 @@ body{background:radial-gradient(circle at 90% 10%,rgba(80,225,186,0.08),transpar
 
 <!-- HERO -->
 <div class="hero" id="intro">
-  <div class="hero-tag">🦴 skull enters the simulation</div>
+  <div class="hero-tag">Level 4</div>
   <h1>3D simulation <em>through skull</em></h1>
-  <p class="hero-desc">Level 3 showed you 3D in water. This level adds the skull — every voxel gets its own acoustic properties derived from CT data. This is where the simulation becomes clinically meaningful and where BRIC, PRESTUS, BabelBrain, and K-Plan all live.</p>
+  <p class="hero-desc">Level 3 was 3D in water. This level adds the skull — every voxel gets its own acoustic properties derived from CT data. You'll use a synthetic skull slab, so no real images are needed.</p>
   <div class="hero-meta">
-    <div class="meta-item"><div class="meta-dot" style="background:var(--coral)"></div>Builds directly on Level 3</div>
     <div class="meta-item"><div class="meta-dot" style="background:var(--amber)"></div>~35 min</div>
-    <div class="meta-item"><div class="meta-dot" style="background:var(--green)"></div>Simulated CT — no real images needed</div>
-    <div class="meta-item"><div class="meta-dot" style="background:var(--purple)"></div>Foundation for BRIC & PRESTUS</div>
+    <div class="meta-item"><div class="meta-dot" style="background:var(--green)"></div>Builds on Level 3</div>
   </div>
 </div>
 
 <!-- CONCEPT STRIP -->
 <div class="concept-strip">
   <div class="concept-card c-coral">
-    <div class="cc-icon">🦴</div>
     <div class="cc-title">HU → acoustic</div>
     <div class="cc-sub">CT Hounsfield Units to c, ρ, α per voxel</div>
     <div class="cc-tag">Aubry 2003</div>
   </div>
   <div class="concept-card c-amber">
-    <div class="cc-icon">⚖️</div>
     <div class="cc-title">checkStability</div>
     <div class="cc-sub">Verify dt is safe with heterogeneous medium</div>
-    <div class="cc-tag">new in 3D</div>
+    <div class="cc-tag">new in L4</div>
   </div>
   <div class="concept-card c-purple">
-    <div class="cc-icon">🎯</div>
     <div class="cc-title">Focal shift</div>
     <div class="cc-sub">Skull refraction moves focus off-target</div>
     <div class="cc-tag">Snell's Law</div>
   </div>
   <div class="concept-card c-green">
-    <div class="cc-icon">🛡️</div>
     <div class="cc-title">Safety metrics</div>
-    <div class="cc-sub">ISPPA, MI, ISPTA — now with skull absorption</div>
+    <div class="cc-sub">ISPPA, MI, ISPTA with skull absorption</div>
     <div class="cc-tag">FDA limits</div>
   </div>
 </div>
@@ -379,8 +373,8 @@ body{background:radial-gradient(circle at 90% 10%,rgba(80,225,186,0.08),transpar
   <div class="section-header">
     <div class="sh-num">1</div>
     <div>
-      <div class="sh-title">Tissue acoustic properties — the numbers you must know</div>
-      <div class="sh-sub">IT'IS database values used by every clinical tFUS lab</div>
+      <div class="sh-title">Tissue acoustic properties</div>
+      <div class="sh-sub">IT'IS database values for water, brain, and skull</div>
     </div>
   </div>
 
@@ -422,8 +416,8 @@ body{background:radial-gradient(circle at 90% 10%,rgba(80,225,186,0.08),transpar
   <div class="section-header">
     <div class="sh-num">2</div>
     <div>
-      <div class="sh-title">HU → acoustic properties (Aubry 2003 formula)</div>
-      <div class="sh-sub">The most cited formula in tFUS simulation literature</div>
+      <div class="sh-title">HU → acoustic properties (Aubry 2003)</div>
+      <div class="sh-sub">Maps CT Hounsfield Units to sound speed, density, and absorption per voxel</div>
     </div>
   </div>
 
@@ -438,8 +432,8 @@ body{background:radial-gradient(circle at 90% 10%,rgba(80,225,186,0.08),transpar
   <div class="callout tip">
     <div class="callout-icon">📖</div>
     <div class="callout-text">
-      <strong>Aubry vs Marsac vs Bancel — which to use?</strong>
-      Aubry 2003 is the original and most cited. Marsac 2017 and Bancel 2021 use direct linear HU scaling (what BRIC uses) — simpler but different empirical fit. All three give similar results for tFUS planning. Your site teaches Aubry because it exposes the porosity concept explicitly, which is more physically intuitive.
+      <strong>Aubry vs Marsac vs Bancel</strong>
+      Aubry 2003 is the original. Marsac 2017 and Bancel 2021 use direct linear HU scaling — simpler but a different empirical fit. All three give similar results for tFUS planning. We use Aubry here because the porosity intermediate makes the physics more transparent.
     </div>
   </div>
 
@@ -553,8 +547,8 @@ body{background:radial-gradient(circle at 90% 10%,rgba(80,225,186,0.08),transpar
   <div class="section-header">
     <div class="sh-num">4</div>
     <div>
-      <div class="sh-title">checkStability — the step I omitted in Level 3</div>
-      <div class="sh-sub">Essential when medium is heterogeneous. BRIC always does this.</div>
+      <div class="sh-title">checkStability + CFL with a heterogeneous medium</div>
+      <div class="sh-sub">Required when medium.sound_speed is a matrix, not a scalar</div>
     </div>
   </div>
 
@@ -620,8 +614,8 @@ body{background:radial-gradient(circle at 90% 10%,rgba(80,225,186,0.08),transpar
   <div class="callout tip">
     <div class="callout-icon">✅</div>
     <div class="callout-text">
-      <strong>This is the key insight</strong>
-      Adding a skull to your simulation changes only medium.sound_speed, medium.density, and medium.alpha_coeff. The source (makeBowl, toneBurst) and the kspaceFirstOrder3D call are identical. This is why you learned the source setup properly in Level 3 — it carries forward unchanged.
+      <strong>Only the medium changes</strong>
+      Adding a skull changes medium.sound_speed, medium.density, and medium.alpha_coeff. The source (makeBowl, toneBurst) and the kspaceFirstOrder3D call are identical to Level 3.
     </div>
   </div>
 
@@ -702,8 +696,8 @@ body{background:radial-gradient(circle at 90% 10%,rgba(80,225,186,0.08),transpar
   <div class="callout tip">
     <div class="callout-icon">✅</div>
     <div class="callout-text">
-      <strong>What to observe when you run this</strong>
-      Compare p_max maps from Level 3 (water only) and this script. You'll see: (1) lower pressure at the focus — skull absorbed some energy; (2) focal spot shifted — skull refraction moved it; (3) bright ring at the inner skull surface — impedance mismatch reflection. These are the three signatures of transcranial propagation.
+      <strong>Compare with Level 3</strong>
+      Run this alongside the Level 3 water script and compare the p_max maps. You should see lower pressure at the focus (skull absorption), a shifted focal spot (refraction), and a bright ring at the inner skull surface (impedance mismatch reflection).
     </div>
   </div>
 
@@ -841,9 +835,9 @@ body{background:radial-gradient(circle at 90% 10%,rgba(80,225,186,0.08),transpar
 
 <!-- NAV FOOTER -->
 <div class="nav-footer">
-  <a href="#" class="nav-btn">← Level 3: First 3D sim</a>
+  <a href="level3_3d_simulation.html" class="nav-btn">← Level 3: First 3D sim</a>
   <div style="font-size:12px;color:var(--text-dim);">Level 4 complete ✓</div>
-  <a href="#" class="nav-btn primary">Level 5: Clinical pipeline →</a>
+  <a href="level5_clinical_pipeline.html" class="nav-btn primary">Level 5: Clinical pipeline →</a>
 </div>
 
 </main>

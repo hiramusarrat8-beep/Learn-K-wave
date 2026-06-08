@@ -1,4 +1,4 @@
-const simCanvas = document.querySelector("#simCanvas");
+﻿const simCanvas = document.querySelector("#simCanvas");
 const simCtx = simCanvas && simCanvas.getContext("2d");
 const brainMRI = new Image();
 brainMRI.src = "brain-mri.jpg"; // place this file in the project folder
@@ -76,7 +76,7 @@ function drawHeroWave() {
   requestAnimationFrame(drawHeroWave);
 }
 
-// ── Hardcoded sulci (normalized: multiply by brain rx/ry) ────────────
+// â”€â”€ Hardcoded sulci (normalized: multiply by brain rx/ry) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Each entry: [startPt, endPt, controlPt]  all inside unit ellipse (mag < 1)
 const SULCI = [
   [[-0.60, -0.55], [-0.72, -0.65], [-0.66, -0.50]],
@@ -156,7 +156,7 @@ function recomputeSim() {
   simNeedRecompute = false;
 }
 
-// Jet colormap: blue → cyan → green → yellow → red
+// Jet colormap: blue â†’ cyan â†’ green â†’ yellow â†’ red
 function jetColor(t) {
   t = Math.max(0, Math.min(1, t));
   let r, g, b;
@@ -168,7 +168,7 @@ function jetColor(t) {
   return [Math.round(r*255), Math.round(g*255), Math.round(b*255)];
 }
 
-// ── Procedural fallback brain (used when brain-mri.jpg is absent) ──
+// â”€â”€ Procedural fallback brain (used when brain-mri.jpg is absent) â”€â”€
 function drawProceduralBrain(ctx, geo, W, H) {
   const { cx, cy, rx, ry, skullPx } = geo;
   const brx = rx - skullPx, bry = ry - skullPx;
@@ -214,7 +214,7 @@ function drawBrainSim() {
   const geo = getSimGeo(W, H);
   const { cx, cy, rx, ry, skullPx, focX, focY } = geo;
 
-  // ── 1. MRI background — fit full image height, no vertical crop ───
+  // â”€â”€ 1. MRI background â€” fit full image height, no vertical crop â”€â”€â”€
   if (brainMRI.complete && brainMRI.naturalWidth > 0) {
     // Scale so the full image height fits the canvas; center horizontally
     const scale = H / brainMRI.naturalHeight;
@@ -232,7 +232,7 @@ function drawBrainSim() {
     drawProceduralBrain(ctx, geo, W, H);
   }
 
-  // ── 2. Transducer geometry (tracks lateral focus position) ────────
+  // â”€â”€ 2. Transducer geometry (tracks lateral focus position) â”€â”€â”€â”€â”€â”€â”€â”€
   // Find skull outer surface directly above the focus lateral position
   const dxN = Math.max(-0.88, Math.min(0.88, (focX - cx) / rx));
   const skullSurfY = cy - ry * Math.sqrt(1 - dxN * dxN); // top of skull at focX
@@ -291,8 +291,8 @@ function drawBrainSim() {
   ctx.textAlign = "center";
   ctx.fillText("tFUS", focX, txBodyTop + 12);
 
-  // ── 3. Converging wavefronts (arcs centred at focus, shrink to 0) ─
-  // Transducer is directly above focus → waves go straight down (dirAngle = -π/2)
+  // â”€â”€ 3. Converging wavefronts (arcs centred at focus, shrink to 0) â”€
+  // Transducer is directly above focus â†’ waves go straight down (dirAngle = -Ï€/2)
   const maxDist  = focY - txFaceY;           // distance from face to focus
   const dirAngle = -Math.PI / 2;             // always straight down
   const arcHalf  = 0.60;                     // aperture half-angle
@@ -307,7 +307,7 @@ function drawBrainSim() {
     const brightness = Math.sin(phase * Math.PI);
 
     // Skull attenuation: dim wavefront while it is in the skull band
-    const midWaveY = focY - r;  // arc midpoint Y (at dirAngle = -π/2)
+    const midWaveY = focY - r;  // arc midpoint Y (at dirAngle = -Ï€/2)
     const inSkull  = midWaveY >= skullSurfY && midWaveY <= (skullSurfY + skullPx);
     const skullFactor = inSkull ? 0.28 : 1.0;
 
@@ -336,12 +336,12 @@ function drawBrainSim() {
     }
   }
 
-  // ── 4. Intensity spot at focus ────────────────────────────────────
+  // â”€â”€ 4. Intensity spot at focus â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const pulseR = simCorrect
     ? 13 + Math.sin(time * 5) * 3    // tight pulsing (corrected)
     : 30 + Math.sin(time * 3) * 6;   // wide diffuse (aberrated)
 
-  // Blue ring — spatial extent
+  // Blue ring â€” spatial extent
   const blueR  = pulseR * 1.9;
   const blueGr = ctx.createRadialGradient(focX, focY, pulseR * 0.5, focX, focY, blueR);
   blueGr.addColorStop(0,    "rgba(20,80,255,0)");
@@ -352,7 +352,7 @@ function drawBrainSim() {
   ctx.ellipse(focX, focY, blueR * 1.2, blueR * 0.70, -0.1, 0, Math.PI * 2);
   ctx.fill();
 
-  // Orange/amber hot-spot — pressure peak
+  // Orange/amber hot-spot â€” pressure peak
   const hotGr = ctx.createRadialGradient(focX - pulseR*0.1, focY - pulseR*0.1, 0, focX, focY, pulseR);
   hotGr.addColorStop(0,    "rgba(255,228,80,0.98)");
   hotGr.addColorStop(0.28, "rgba(255,130,15,0.90)");
@@ -363,7 +363,7 @@ function drawBrainSim() {
   ctx.ellipse(focX, focY, pulseR, pulseR * 0.72, -0.15, 0, Math.PI * 2);
   ctx.fill();
 
-  // ── 5. Dashed target box ──────────────────────────────────────────
+  // â”€â”€ 5. Dashed target box â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   ctx.strokeStyle = "rgba(0,230,100,0.88)";
   ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
   ctx.strokeRect(focX - 26, focY - 26, 52, 52);
@@ -373,12 +373,12 @@ function drawBrainSim() {
   ctx.textAlign = "left";
   ctx.fillText("TARGET", focX + 30, focY + 4);
 
-  // ── 6. Info label ─────────────────────────────────────────────────
+  // â”€â”€ 6. Info label â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   ctx.fillStyle = "rgba(255,255,255,0.52)";
   ctx.font = '10px "SFMono-Regular",Consolas,monospace';
   ctx.textAlign = "left";
   ctx.fillText(
-    `${simFreq} kHz · ${simDepth} mm depth · ${simCorrect ? "phase corrected ✓" : "aberrated (no correction) ✗"}`,
+    `${simFreq} kHz Â· ${simDepth} mm depth Â· ${simCorrect ? "phase corrected âœ“" : "aberrated (no correction) âœ—"}`,
     12, H - 12
   );
 }
@@ -580,10 +580,10 @@ function drawWavePath() {
 
   const C_GEL = 1500, C_SKULL = 2900, C_CSF = 1500, C_BRAIN = 1560;
 
-  // ── Beam geometry with Snell's law ────────────────────────────────
+  // â”€â”€ Beam geometry with Snell's law â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // The transducer emits a converging beam aimed at (ex, midY).
   // Snell's law at each vertical interface (normal = x-direction):
-  //   sin(θ_t) = sin(θ_i) * c2/c1   (small-angle: slope_t ≈ slope_i * c2/c1)
+  //   sin(Î¸_t) = sin(Î¸_i) * c2/c1   (small-angle: slope_t â‰ˆ slope_i * c2/c1)
   const hw0 = H * 0.21;            // beam half-width at transducer face
   const s_gel = hw0 / (ex - gx);   // convergence slope aimed at ex
   const s_skull = s_gel * (C_SKULL / C_GEL);   // steeper in skull (c2 > c1)
@@ -595,7 +595,7 @@ function drawWavePath() {
   const hw_cx = Math.max(0, hw_sx   - s_skull * (cx_ - sx));
   const hw_bx = Math.max(0, hw_cx   - s_csf   * (bx  - cx_));
 
-  // Actual focus: where hw → 0 in brain region
+  // Actual focus: where hw â†’ 0 in brain region
   const xFocus = hw_bx > 0 ? bx + hw_bx / s_brain : bx;
 
   function hw(px) {
@@ -606,13 +606,13 @@ function drawWavePath() {
     return Math.max(0, hw_bx - s_brain * (px - bx));
   }
 
-  // ── Region backgrounds ────────────────────────────────────────────
+  // â”€â”€ Region backgrounds â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const regions = [
     { x: 0,   w: txW,       bg: "#0e1c24", label: "TRANSDUCER",           lc: "#63d1bd" },
     { x: gx,  w: sx  - gx,  bg: "#112530", label: "GEL",                  lc: "#63d1bd", speed: "1500 m/s",             sc: "#63d1bd" },
     { x: sx,  w: cx_ - sx,  bg: "#2a0f0f", label: "SKULL",                lc: "#e8c080", speed: "c = 2900\naberration", sc: "#e8c080" },
     { x: cx_, w: bx  - cx_, bg: "#0f2028", label: "CSF",                  lc: "#8fa79c" },
-    { x: bx,  w: W   - bx,  bg: "#0d201e", label: "BRAIN TISSUE → TARGET",lc: "#d75f4f", speed: "1560 m/s",             sc: "#d75f4f" },
+    { x: bx,  w: W   - bx,  bg: "#0d201e", label: "BRAIN TISSUE â†’ TARGET",lc: "#d75f4f", speed: "1560 m/s",             sc: "#d75f4f" },
   ];
 
   regions.forEach((r) => { ctx.fillStyle = r.bg; ctx.fillRect(r.x, 0, r.w, H); });
@@ -623,7 +623,7 @@ function drawWavePath() {
     ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
   });
 
-  // ── Labels ───────────────────────────────────────────────────────
+  // â”€â”€ Labels â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   ctx.textAlign = "center";
   regions.forEach((r) => {
     const lx = r.x + r.w / 2;
@@ -639,24 +639,24 @@ function drawWavePath() {
     }
   });
 
-  // ── Multi-ray refraction fan ──────────────────────────────────────
+  // â”€â”€ Multi-ray refraction fan â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Show 7 rays from transducer converging toward focus.
   // Each ray obeys Snell's law at skull entry and exit, producing visible kinks.
   const N = 7;
   for (let i = 0; i < N; i++) {
-    const t = (i / (N - 1) - 0.5) * 2;   // -1 (top) → +1 (bottom)
-    if (Math.abs(t) < 0.05) continue;     // skip center — drawn as the wave below
+    const t = (i / (N - 1) - 0.5) * 2;   // -1 (top) â†’ +1 (bottom)
+    if (Math.abs(t) < 0.05) continue;     // skip center â€” drawn as the wave below
 
     const yStart = midY + t * hw0;
     // Slope in gel aimed at (ex, midY)
     const sg = (midY - yStart) / (ex - gx);
 
-    // Snell at gel→skull: sinθ_t = sinθ_i * c_skull/c_gel
+    // Snell at gelâ†’skull: sinÎ¸_t = sinÎ¸_i * c_skull/c_gel
     const sinTi_g = Math.abs(sg) / Math.hypot(1, sg);
     const sinTt_s = Math.min(0.9999, sinTi_g * (C_SKULL / C_GEL));
     const ss = Math.sign(sg) * Math.tan(Math.asin(sinTt_s));
 
-    // Snell at skull→csf: sinθ_t = sinθ_i * c_csf/c_skull
+    // Snell at skullâ†’csf: sinÎ¸_t = sinÎ¸_i * c_csf/c_skull
     const sinTi_s = Math.abs(ss) / Math.hypot(1, ss);
     const sinTt_b = Math.min(0.9999, sinTi_s * (C_CSF / C_SKULL));
     const sb = Math.sign(ss) * Math.tan(Math.asin(sinTt_b));
@@ -672,15 +672,15 @@ function drawWavePath() {
     ctx.strokeStyle = `rgba(120,160,255,${a})`;
     ctx.setLineDash([]);
     ctx.beginPath(); ctx.moveTo(gx, yStart); ctx.lineTo(sx, ySx); ctx.stroke();
-    // Skull segment — visible kink at sx
+    // Skull segment â€” visible kink at sx
     ctx.strokeStyle = `rgba(220,195,130,${a})`;
     ctx.beginPath(); ctx.moveTo(sx, ySx); ctx.lineTo(cx_, yCx); ctx.stroke();
-    // Brain segment — second kink at cx_, converges to focus
+    // Brain segment â€” second kink at cx_, converges to focus
     ctx.strokeStyle = `rgba(210,80,80,${a})`;
     ctx.beginPath(); ctx.moveTo(cx_, yCx); ctx.lineTo(xFocus, yFx); ctx.stroke();
   }
 
-  // ── Converging beam envelope (dashed) ────────────────────────────
+  // â”€â”€ Converging beam envelope (dashed) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const envEnd = Math.min(xFocus, W - 2);
   ctx.strokeStyle = "rgba(100,150,255,0.28)";
   ctx.lineWidth = 1.2;
@@ -695,8 +695,8 @@ function drawWavePath() {
   }
   ctx.setLineDash([]);
 
-  // ── Central animated wave (amplitude = beam half-width) ───────────
-  // Wave oscillates within the envelope; amplitude → 0 at focus.
+  // â”€â”€ Central animated wave (amplitude = beam half-width) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Wave oscillates within the envelope; amplitude â†’ 0 at focus.
   const waveSpeeds = [
     { start: gx,  end: sx,     c: C_GEL   },
     { start: sx,  end: cx_,    c: C_SKULL  },
@@ -729,10 +729,10 @@ function drawWavePath() {
   }
   ctx.stroke();
 
-  // ── Refraction labels at skull interfaces ─────────────────────────
+  // â”€â”€ Refraction labels at skull interfaces â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   [
-    [sx,  "θ₁→θ₂  n↑", hw_sx],
-    [cx_, "θ₂→θ₁  n↓", hw_cx],
+    [sx,  "Î¸â‚â†’Î¸â‚‚  nâ†‘", hw_sx],
+    [cx_, "Î¸â‚‚â†’Î¸â‚  nâ†“", hw_cx],
   ].forEach(([x, label, hwAt]) => {
     ctx.strokeStyle = "rgba(240,200,80,0.55)";
     ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
@@ -744,11 +744,11 @@ function drawWavePath() {
     ctx.fillText(label, x, midY - hwAt - 14);
   });
 
-  // ── Transducer bar ────────────────────────────────────────────────
+  // â”€â”€ Transducer bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   ctx.fillStyle = "#5588ff";
   ctx.fillRect(txW - 5, midY - hw0 * 1.05, 5, hw0 * 2.1);
 
-  // ── Focus point (actual, where rays converge) ─────────────────────
+  // â”€â”€ Focus point (actual, where rays converge) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const fX = Math.min(xFocus, W - margin * 0.5);
   const glowR = 13 + Math.sin(time * 3) * 3;
   const glow = ctx.createRadialGradient(fX, midY, 0, fX, midY, glowR);
@@ -767,7 +767,7 @@ function drawWavePath() {
   ctx.textAlign = "center";
   ctx.fillText("FOCUS", fX, midY + H * 0.33);
 
-  // ── Intended target (when skull has shifted focus away from it) ────
+  // â”€â”€ Intended target (when skull has shifted focus away from it) â”€â”€â”€â”€
   if (ex < W - 5 && ex - fX > 14) {
     ctx.strokeStyle = "rgba(255,255,255,0.28)";
     ctx.lineWidth = 1; ctx.setLineDash([3, 4]);
@@ -1127,7 +1127,7 @@ document.querySelectorAll("[data-layer-tab]").forEach((button) => {
     document.querySelectorAll(".layer-detail-panel").forEach((panel) => {
       panel.classList.toggle("active", panel.id === targetId);
     });
-    document.querySelector("#learning-layers")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.querySelector(`#${targetId}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
     requestAnimationFrame(resizeAll);
   });
 });
@@ -1178,7 +1178,7 @@ document.querySelector("#sl-dens").addEventListener("input", (event) => {
   document.querySelector(selector).addEventListener("input", drawPhase);
 });
 
-// sim controls removed — defaults: 500 kHz, 40 mm depth, 0 lateral, phase correction ON
+// sim controls removed â€” defaults: 500 kHz, 40 mm depth, 0 lateral, phase correction ON
 
 document.querySelector("#wp-frequency").addEventListener("input", (e) => {
   document.querySelector("#wp-freq-out").textContent = `${e.target.value} kHz`;
@@ -1189,7 +1189,7 @@ document.querySelector("#wp-thick").addEventListener("input", (e) => {
   document.querySelector("#wp-thick-out").textContent = `${wpThick} mm`;
 });
 
-// ── Code comment highlighting ──────────────────────────────────────
+// â”€â”€ Code comment highlighting â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Wraps everything from % to end-of-line in .code-cmt so comments
 // appear in a muted colour, separate from the main code colour.
 function highlightComments() {
@@ -1230,3 +1230,32 @@ window.addEventListener("resize", resizeAll);
 resizeAll();
 updateWhyImageScene();
 drawHeroWave();
+
+
+/* ── How this site works — smooth scroll + layer tab activation ── */
+document.querySelectorAll(".hiw-link[data-layer-tab], .hiw-cta[data-layer-tab]").forEach((el) => {
+  el.addEventListener("click", (e) => {
+    e.preventDefault();
+    const tabId = el.dataset.layerTab;
+    document.querySelectorAll("[data-layer-tab]").forEach((btn) => {
+      if (!btn.classList.contains("hiw-link") && !btn.classList.contains("hiw-cta")) {
+        const isActive = btn.dataset.layerTab === tabId;
+        btn.classList.toggle("active", isActive);
+        btn.setAttribute("aria-selected", String(isActive));
+      }
+    });
+    document.querySelectorAll(".layer-detail-panel").forEach((panel) => {
+      panel.classList.toggle("active", panel.id === tabId);
+    });
+    document.getElementById(tabId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+});
+
+document.querySelectorAll(".hiw-link:not([data-layer-tab]), .hiw-cta:not([data-layer-tab])").forEach((el) => {
+  el.addEventListener("click", (e) => {
+    e.preventDefault();
+    const target = document.querySelector(el.getAttribute("href"));
+    target?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+});
+/* ── / How this site works ── */

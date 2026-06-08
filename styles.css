@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --ink: #15212a;
   --muted: #5d6870;
   --paper: #f5f6f0;
@@ -1010,7 +1010,7 @@ footer {
   color: var(--teal);
 }
 
-/* ── Layer 2 section ───────────────────────────────────────────────── */
+/* â”€â”€ Layer 2 section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .layer2-section {
   background: var(--paper);
 }
@@ -1262,7 +1262,7 @@ footer {
   max-width: 900px;
 }
 
-/* ── medium.* property cards ───────────────────────────────────────── */
+/* â”€â”€ medium.* property cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .medium-props-block { background: #f7fbfa; }
 
 .medium-prop-cards {
@@ -1354,7 +1354,7 @@ footer {
   word-break: break-all;
 }
 
-/* ── Tissue properties table ───────────────────────────────────────── */
+/* â”€â”€ Tissue properties table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .tissue-table-wrap {
   margin-top: 18px;
   overflow-x: auto;
@@ -1411,7 +1411,7 @@ footer {
 
 .tt-source { color: #4a7060; font-size: 0.80rem; }
 
-/* ── end medium cards ──────────────────────────────────────────────── */
+/* â”€â”€ end medium cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 /* CT conversion code block */
 .layer2-pre {
   margin: 18px 0 0;
@@ -1432,7 +1432,7 @@ footer {
   font-size: inherit;
 }
 
-/* MATLAB comment styling — % to end of line */
+/* MATLAB comment styling â€” % to end of line */
 .code-cmt {
   color: #5a9478;        /* muted green, clearly different from #c8e8d8 main code */
   font-style: italic;
@@ -1563,7 +1563,7 @@ footer {
   }
 }
 
-/* ── Layer 2 interview block ───────────────────────────────────────── */
+/* â”€â”€ Layer 2 interview block â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .interview-block {
   margin-top: 16px;
   padding: 22px 26px;
@@ -1575,9 +1575,9 @@ footer {
   line-height: 1.78;
 }
 
-/* ── end Layer 2 ───────────────────────────────────────────────────── */
+/* â”€â”€ end Layer 2 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
-/* ── Layer 3 ───────────────────────────────────────────────────────── */
+/* â”€â”€ Layer 3 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .l3-header  { background: #f4f1f9; }
 .l3-badge   { background: var(--plum); }
 .l3-eyebrow { color: var(--plum); }
@@ -1697,9 +1697,9 @@ footer {
   border-radius: 3px;
   font-size: 0.88em;
 }
-/* ── end Layer 3 ───────────────────────────────────────────────────── */
+/* â”€â”€ end Layer 3 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
-/* ── Layer 4 / 5 / 6 badges & headers ─────────────────────────────── */
+/* â”€â”€ Layer 4 / 5 / 6 badges & headers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .l4-badge   { background: var(--green); }
 .l4-header  { background: #edf7f2; }
 .l4-eyebrow { color: var(--green); }
@@ -1712,7 +1712,7 @@ footer {
 .l6-header  { background: #fdf0ee; }
 .l6-eyebrow { color: var(--coral); }
 
-/* ── Struct cards (Layer 4) ────────────────────────────────────────── */
+/* â”€â”€ Struct cards (Layer 4) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .structs-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0,1fr));
@@ -1751,7 +1751,7 @@ footer {
   margin: 0 0 10px;
 }
 
-/* ── Solver flow diagram (Layer 4) ─────────────────────────────────── */
+/* â”€â”€ Solver flow diagram (Layer 4) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .solver-flow {
   display: flex;
   flex-wrap: wrap;
@@ -1785,7 +1785,7 @@ footer {
   flex-shrink: 0;
 }
 
-/* ── Two info grid (Layer 5) ───────────────────────────────────────── */
+/* â”€â”€ Two info grid (Layer 5) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .two-info-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0,1fr));
@@ -1823,7 +1823,7 @@ footer {
   line-height: 1.6;
 }
 
-/* ── Pipeline steps (Layer 5) ──────────────────────────────────────── */
+/* â”€â”€ Pipeline steps (Layer 5) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .layer-pipeline {
   display: flex;
   flex-direction: column;
@@ -1875,7 +1875,7 @@ footer {
   line-height: 1.55;
 }
 
-/* ── Accordion (Layer 5 & 6) ───────────────────────────────────────── */
+/* â”€â”€ Accordion (Layer 5 & 6) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .layer-accordion {
   margin-top: 18px;
   border: 1px solid var(--line);
@@ -1936,7 +1936,7 @@ footer {
   font-size: 0.85em;
 }
 
-/* ── FFT good/bad rows (Layer 6) ───────────────────────────────────── */
+/* â”€â”€ FFT good/bad rows (Layer 6) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .fft-good td:first-child { color: var(--teal) !important; font-weight: 700; }
 .fft-bad  td:first-child { color: var(--coral) !important; font-weight: 700; }
 .fft-bad  td { opacity: 0.8; }
@@ -1948,7 +1948,7 @@ footer {
   .flow-step { min-width: 56px; font-size: 0.65rem; }
 }
 
-/* ── 05 Safety Parameters ──────────────────────────────────────────── */
+/* â”€â”€ 05 Safety Parameters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .section-num-heading {
   display: flex;
   align-items: center;
@@ -2025,7 +2025,7 @@ footer {
   letter-spacing: 0.03em;
   color: #e8f2ec;
 }
-/* ── end Safety Parameters ─────────────────────────────────────────── */
+/* â”€â”€ end Safety Parameters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .guide-section {
   background: #eaf1ee;
 }
@@ -2230,3 +2230,138 @@ footer p {
   border-top: 1px solid var(--line, #dde2df);
   margin: 18px 0;
 }
+
+
+/* ── How this site works ──────────────────────────────────── */
+.how-it-works-section {
+  background: #f9faf8;
+}
+
+.hiw-subtitle {
+  max-width: 560px;
+  margin: 8px auto 0;
+  font-size: 1rem;
+  color: var(--muted, #5d6870);
+  text-align: center;
+  line-height: 1.65;
+}
+
+.hiw-columns {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  margin-top: 48px;
+}
+
+.hiw-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid var(--line, #dde2df);
+  border-radius: 16px;
+  padding: 32px 28px 28px;
+  position: relative;
+}
+
+.hiw-step-badge {
+  position: absolute;
+  top: -16px;
+  left: 28px;
+  background: var(--teal, #0f7c80);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.hiw-col-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.hiw-icon { font-size: 1.5rem; }
+
+.hiw-col-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ink, #15212a);
+  margin: 0;
+}
+
+.hiw-col-desc {
+  font-size: 0.88rem;
+  color: var(--muted, #5d6870);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.hiw-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.hiw-link {
+  display: block;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 0.83rem;
+  color: var(--ink, #15212a);
+  text-decoration: none;
+  line-height: 1.45;
+  border: 1px solid transparent;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.hiw-link:hover {
+  background: #eef8f8;
+  border-color: #b2d8d8;
+  color: var(--teal, #0f7c80);
+}
+
+.hiw-cta {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 10px 20px;
+  background: var(--teal, #0f7c80);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: 8px;
+  text-decoration: none;
+  align-self: flex-start;
+  transition: background 0.15s, transform 0.12s;
+}
+.hiw-cta:hover {
+  background: #0a6366;
+  transform: translateY(-1px);
+}
+
+/* Arrow between columns */
+.hiw-arrow {
+  flex-shrink: 0;
+  font-size: 1.6rem;
+  color: #c8d3d0;
+  padding: 0 12px;
+  margin-top: 80px;
+  user-select: none;
+}
+
+@media (max-width: 780px) {
+  .hiw-columns {
+    flex-direction: column;
+    gap: 32px;
+  }
+  .hiw-arrow { display: none; }
+  .hiw-col { padding: 32px 20px 24px; }
+}
+/* ── / How this site works ────────────────────────────────── */
